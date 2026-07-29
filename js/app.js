@@ -407,6 +407,50 @@ class MethodWiseApp {
     }
   }
 
+  updateCostAnalysisFromSlider(qty) {
+    qty = parseInt(qty) || 5000;
+    const qtyDisplay = document.getElementById('cost-volume-val-display');
+    if (qtyDisplay) qtyDisplay.textContent = `${qty.toLocaleString()} Units`;
+
+    // Tooling NRE base cost = ₹2,50,000
+    const fixedTooling = 250000;
+    const toolingPerUnit = Math.round(fixedTooling / qty);
+    const rawMaterial = 280;
+    const machineOperating = 260;
+    const finishing = 60;
+    const inspection = 40;
+    const logistics = 20;
+
+    const totalUnit = rawMaterial + machineOperating + toolingPerUnit + finishing + inspection + logistics;
+    const totalBatch = totalUnit * qty;
+
+    const unitPriceEl = document.getElementById('cost-calc-unit-price');
+    const totalBatchEl = document.getElementById('cost-calc-total-batch');
+    if (unitPriceEl) unitPriceEl.textContent = `₹${totalUnit.toLocaleString()}`;
+    if (totalBatchEl) totalBatchEl.textContent = `Total Batch: ₹${totalBatch.toLocaleString()}`;
+
+    // Update table breakdown values & percentages
+    const matTable = document.getElementById('cost-table-mat');
+    const mfgTable = document.getElementById('cost-table-mfg');
+    const toolTable = document.getElementById('cost-table-tooling');
+    const totalTable = document.getElementById('cost-table-total');
+
+    if (matTable) matTable.textContent = `₹${rawMaterial}`;
+    if (mfgTable) mfgTable.textContent = `₹${machineOperating}`;
+    if (toolTable) toolTable.textContent = `₹${toolingPerUnit}`;
+    if (totalTable) totalTable.textContent = `₹${totalUnit.toLocaleString()} / unit`;
+
+    // Update share percentages
+    const shareMat = document.getElementById('cost-share-mat');
+    const shareMfg = document.getElementById('cost-share-mfg');
+    const shareTool = document.getElementById('cost-share-tooling');
+
+    if (shareMat) shareMat.textContent = `${Math.round((rawMaterial / totalUnit) * 100)}%`;
+    if (shareMfg) shareMfg.textContent = `${Math.round((machineOperating / totalUnit) * 100)}%`;
+    if (shareTool) shareTool.textContent = `${Math.round((toolingPerUnit / totalUnit) * 100)}%`;
+  }
+
+
 
   displayAIResults(result) {
     this.currentAnalysisResult = result;
