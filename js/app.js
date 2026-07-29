@@ -278,8 +278,25 @@ class MethodWiseApp {
           }
         });
       }
-    });
+  toggleNotificationsDropdown() {
+    const dropdown = document.getElementById('notifications-dropdown');
+    if (!dropdown) return;
+    dropdown.classList.toggle('hidden');
+
+    const searchDropdown = document.getElementById('global-search-dropdown');
+    if (searchDropdown) searchDropdown.classList.add('hidden');
   }
+
+  clearNotifications() {
+    const list = document.getElementById('notifications-list-container');
+    const badge = document.getElementById('topbar-notif-count');
+    if (list) {
+      list.innerHTML = `<div style="padding: 18px; text-align: center; color: var(--text-muted); font-size: 0.84rem;">No unread notifications</div>`;
+    }
+    if (badge) badge.style.display = 'none';
+    this.showToast('Notifications cleared', 'info');
+  }
+
 
 
 
