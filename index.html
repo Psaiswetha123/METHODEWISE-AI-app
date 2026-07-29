@@ -109,6 +109,9 @@
         <li class="sidebar-nav-item" data-target-view="create-product-wizard">
           <i data-lucide="plus-circle"></i> <span>Create New Product</span>
         </li>
+        <li class="sidebar-nav-item" data-target-view="2d-blueprint-page">
+          <i data-lucide="layout"></i> <span>2D CAD Blueprint</span>
+        </li>
         <li class="sidebar-nav-item" data-target-view="material-advisor-page">
           <i data-lucide="flask-conical"></i> <span>Material Advisor</span>
         </li>
@@ -821,6 +824,58 @@
         </div>
       </section>
 
+      <!-- ====================================================================== -->
+      <!-- 2D CAD TECHNICAL BLUEPRINT PAGE -->
+      <!-- ====================================================================== -->
+      <section id="2d-blueprint-page" class="view-section hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h2 style="font-size: 1.6rem; display: flex; align-items: center; gap: 10px;">
+              <i data-lucide="layout" class="icon-accent"></i> 2D CAD Technical Drawing & Blueprint Visualizer
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Orthographic 2D projection drawing, dimension leader callouts, wall thickness, and DFM annotations</p>
+          </div>
+
+          <div style="display: flex; gap: 10px;" id="standalone-2d-view-toggle-btns">
+            <button class="btn btn-primary btn-sm active" onclick="window.app.set2DView('front')">Front View</button>
+            <button class="btn btn-outline btn-sm" onclick="window.app.set2DView('top')">Top View</button>
+            <button class="btn btn-outline btn-sm" onclick="window.app.set2DView('section')">Section Cut View</button>
+          </div>
+        </div>
+
+        <div class="glass-card" style="padding: 24px; margin-bottom: 24px;">
+          <div class="viewer-2d-wrapper">
+            <div id="standalone-2d-canvas-container" class="viewer-2d-canvas-container" style="height: 480px;"></div>
+          </div>
+        </div>
+
+        <!-- Live Dimension Controls -->
+        <div class="glass-card" style="padding: 24px;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 16px;">Interactive Dimension Scaling Controls</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+            <div class="form-group">
+              <label class="form-label">Length (mm)</label>
+              <input type="number" id="2d-dim-l" class="form-control" value="280" oninput="window.app.update2DFromControls()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Width (mm)</label>
+              <input type="number" id="2d-dim-w" class="form-control" value="220" oninput="window.app.update2DFromControls()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Height (mm)</label>
+              <input type="number" id="2d-dim-h" class="form-control" value="180" oninput="window.app.update2DFromControls()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Unit System</label>
+              <select id="2d-dim-unit" class="form-control" onchange="window.app.update2DFromControls()">
+                <option value="mm" selected>Millimeters (mm)</option>
+                <option value="cm">Centimeters (cm)</option>
+                <option value="in">Inches (in)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- ====================================================================== -->
       <!-- 6. DESIGN HISTORY PAGE -->

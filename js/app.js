@@ -261,18 +261,26 @@ class MethodWiseApp {
     if (this.viewer2DInstance) {
       this.viewer2DInstance.setViewMode(mode);
     }
-
-    const container = document.getElementById('2d-view-toggle-btns');
-    if (container) {
-      container.querySelectorAll('button').forEach(btn => {
-        if (btn.getAttribute('onclick').includes(`'${mode}'`)) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
+    if (this.standalone2DViewer) {
+      this.standalone2DViewer.setViewMode(mode);
     }
+
+    ['2d-view-toggle-btns', 'standalone-2d-view-toggle-btns'].forEach(id => {
+      const container = document.getElementById(id);
+      if (container) {
+        container.querySelectorAll('button').forEach(btn => {
+          if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${mode}'`)) {
+            btn.classList.add('active', 'btn-primary');
+            btn.classList.remove('btn-outline');
+          } else {
+            btn.classList.remove('active', 'btn-primary');
+            btn.classList.add('btn-outline');
+          }
+        });
+      }
+    });
   }
+
 
 
   handleLogin() {
@@ -353,8 +361,32 @@ class MethodWiseApp {
       this.renderMaterialAdvisorPage();
     } else if (viewId === 'manufacturing-advisor-page') {
       this.renderManufacturingAdvisorPage();
+    } else if (viewId === '2d-blueprint-page') {
+      setTimeout(() => {
+        if (window.CAD2DViewer) {
+          const l = parseFloat(document.getElementById('2d-dim-l')?.value) || 280;
+          const w = parseFloat(document.getElementById('2d-dim-w')?.value) || 220;
+          const h = parseFloat(document.getElementById('2d-dim-h')?.value) || 180;
+          const unit = document.getElementById('2d-dim-unit')?.value || 'mm';
+          this.standalone2DViewer = new window.CAD2DViewer('standalone-2d-canvas-container', {
+            length: l, width: w, height: h, unit: unit, productName: 'Smart Helmet Assembly'
+          });
+        }
+      }, 100);
     }
   }
+
+  update2DFromControls() {
+    const l = parseFloat(document.getElementById('2d-dim-l')?.value) || 280;
+    const w = parseFloat(document.getElementById('2d-dim-w')?.value) || 220;
+    const h = parseFloat(document.getElementById('2d-dim-h')?.value) || 180;
+    const unit = document.getElementById('2d-dim-unit')?.value || 'mm';
+
+    if (this.standalone2DViewer) {
+      this.standalone2DViewer.updateDimensions(l, w, h, unit);
+    }
+  }
+
 
   displayAIResults(result) {
     this.currentAnalysisResult = result;
