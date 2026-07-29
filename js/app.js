@@ -278,6 +278,9 @@ class MethodWiseApp {
           }
         });
       }
+    });
+  }
+
   toggleNotificationsDropdown() {
     const dropdown = document.getElementById('notifications-dropdown');
     if (!dropdown) return;
