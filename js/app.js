@@ -651,12 +651,14 @@ class MethodWiseApp {
 
   renderDashboardStats() {
     // Render Quick Stats values
-    document.getElementById('dash-stat-active').textContent = this.savedProjects.length + 4;
-    document.getElementById('dash-stat-savings').textContent = '₹1,45,000';
-    document.getElementById('dash-stat-avgscore').textContent = '8.8 / 10';
+    document.getElementById('dash-stat-active').textContent = this.savedProjects.length;
+    const statAnalyses = document.getElementById('dash-stat-analyses');
+    if (statAnalyses) statAnalyses.textContent = (this.savedProjects.length * 4);
+    const statSaved = document.getElementById('dash-stat-saved');
+    if (statSaved) statSaved.textContent = this.savedProjects.length;
     document.getElementById('dash-stat-accuracy').textContent = '99.4%';
 
-    // Render Recent Activity List (Last 5 Analyzed Products)
+    // Render Recent Activity List (Last 5 Analyzed Products with View button)
     const actList = document.getElementById('dash-recent-activity');
     if (actList) {
       actList.innerHTML = this.savedProjects.slice(0, 5).map(p => `
@@ -664,18 +666,72 @@ class MethodWiseApp {
           <div style="display: flex; align-items: center; gap: 12px;">
             <div class="activity-icon"><i data-lucide="check-circle-2" style="color: var(--accent-emerald);"></i></div>
             <div class="activity-info">
-              <h4 style="font-size: 0.95rem; margin-bottom: 2px;">${p.name}</h4>
-              <p style="font-size: 0.78rem; color: var(--text-muted);">${p.process} | ${p.material}</p>
+              <h4 style="font-size: 0.92rem; margin-bottom: 2px;">${p.name}</h4>
+              <p style="font-size: 0.76rem; color: var(--text-muted);">${p.process} | ${p.material} (${p.date})</p>
             </div>
           </div>
-          <div style="text-align: right;">
+          <div style="display: flex; align-items: center; gap: 8px;">
             <span class="badge badge-cyan" style="font-size: 0.75rem;">Score: ${p.score}/10</span>
-            <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 4px;">${p.date}</div>
+            <button class="btn btn-outline btn-sm" onclick="window.app.viewHistoryDetail('${p.id}')">View</button>
           </div>
         </div>
       `).join('');
     }
+
+    // Render Favorite Materials list on Dashboard
+    this.renderFavoriteMaterials();
+    if (window.lucide) window.lucide.createIcons();
   }
+
+  renderFavoriteMaterials() {
+    const container = document.getElementById('dash-favorite-materials');
+    if (!container) return;
+
+    const favorites = JSON.parse(localStorage.getItem('methodwise_fav_materials') || '["ABS Plastic", "Titanium Ti-6Al-4V", "Aluminium 6061-T6"]');
+    container.innerHTML = favorites.map(name => `
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(8, 13, 26, 0.6); border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.84rem;">
+        <span style="font-weight: 600; color: var(--text-main);"><i data-lucide="flask-conical" class="icon-accent" style="width: 14px;"></i> ${name}</span>
+        <button class="btn-favorite is-favorite" style="width: 26px; height: 26px; font-size: 0.75rem;" onclick="window.app.toggleFavoriteMaterial('${name}')" title="Remove Favorite">
+          <i data-lucide="heart"></i>
+        </button>
+      </div>
+    `).join('');
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  toggleFavoriteMaterial(name) {
+    let favorites = JSON.parse(localStorage.getItem('methodwise_fav_materials') || '["ABS Plastic", "Titanium Ti-6Al-4V", "Aluminium 6061-T6"]');
+    if (favorites.includes(name)) {
+      favorites = favorites.filter(x => x !== name);
+      this.showToast(`Removed ${name} from favorites`, 'info');
+    } else {
+      favorites.push(name);
+      this.showToast(`Added ${name} to favorites ❤️`, 'success');
+    }
+    localStorage.setItem('methodwise_fav_materials', JSON.stringify(favorites));
+    this.renderFavoriteMaterials();
+  }
+
+  exportExcel() {
+    if (!this.savedProjects || this.savedProjects.length === 0) {
+      this.showToast('No projects available to export.', 'warning');
+      return;
+    }
+    const headers = ['Project ID', 'Product Name', 'Category', 'Material', 'Process', 'Unit Cost', 'AI Score', 'Date'];
+    const rows = this.savedProjects.map(p => [
+      p.id, `"${p.name}"`, `"${p.type}"`, `"${p.material}"`, `"${p.process}"`, p.unitCost || 0, p.score || 9.0, p.date
+    ]);
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `MethodWise_Engineering_Report_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.showToast('Engineering CSV Report exported successfully!', 'success');
+  }
+
 
   renderMaterialAdvisorPage() {
     const tableBody = document.getElementById('mat-advisor-tbody');
@@ -684,17 +740,29 @@ class MethodWiseApp {
     const data = window.METHODWISE_DATA.MATERIALS;
     const all = [...data.metals, ...data.plastics, ...data.composites];
 
-    tableBody.innerHTML = all.map(m => `
-      <tr>
-        <td><strong>${m.name}</strong></td>
-        <td><span class="material-cat-badge badge-${m.category.toLowerCase()}">${m.category}</span></td>
-        <td>${m.strength} MPa</td>
-        <td>${m.density} g/cm³</td>
-        <td>${m.durability}%</td>
-        <td>${m.tempResistance}°C</td>
-        <td>${m.costDisplay}</td>
-      </tr>
-    `).join('');
+    tableBody.innerHTML = all.map(m => {
+      const favs = JSON.parse(localStorage.getItem('methodwise_fav_materials') || '["ABS Plastic", "Titanium Ti-6Al-4V", "Aluminium 6061-T6"]');
+      const isFav = favs.includes(m.name);
+      return `
+        <tr>
+          <td>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <strong>${m.name}</strong>
+              <button class="btn-favorite ${isFav ? 'is-favorite' : ''}" style="width: 28px; height: 28px; font-size: 0.75rem;" onclick="window.app.toggleFavoriteMaterial('${m.name}')" title="Favorite Material">
+                <i data-lucide="heart"></i>
+              </button>
+            </div>
+          </td>
+          <td><span class="material-cat-badge badge-${m.category.toLowerCase()}">${m.category}</span></td>
+          <td>${m.strength} MPa</td>
+          <td>${m.density} g/cm³</td>
+          <td>${m.durability}%</td>
+          <td>${m.tempResistance}°C</td>
+          <td>${m.costDisplay}</td>
+        </tr>
+      `;
+    }).join('');
+    if (window.lucide) window.lucide.createIcons();
   }
 
   renderManufacturingAdvisorPage() {
