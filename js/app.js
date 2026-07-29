@@ -542,15 +542,23 @@ class MethodWiseApp {
   }
 
   loadSavedProjects() {
+    const defaults = window.METHODWISE_DATA.PROJECTS || [];
     const stored = localStorage.getItem('methodwise_projects');
     if (stored) {
       try {
-        this.savedProjects = JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        const storedIds = new Set(parsed.map(p => p.id));
+        defaults.forEach(d => {
+          if (!storedIds.has(d.id)) {
+            parsed.push(d);
+          }
+        });
+        this.savedProjects = parsed;
       } catch (e) {
-        this.savedProjects = window.METHODWISE_DATA.PROJECTS;
+        this.savedProjects = defaults;
       }
     } else {
-      this.savedProjects = window.METHODWISE_DATA.PROJECTS;
+      this.savedProjects = defaults;
       localStorage.setItem('methodwise_projects', JSON.stringify(this.savedProjects));
     }
   }
