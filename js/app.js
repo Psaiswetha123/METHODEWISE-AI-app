@@ -368,11 +368,21 @@ class MethodWiseApp {
       this.renderDashboardStats();
     } else if (viewId === '3d-preview-page') {
       setTimeout(() => {
-        if (!this.viewer3DPageInstance && window.CAD3DViewer) {
-          this.viewer3DPageInstance = new window.CAD3DViewer('main-3d-canvas-container', {
-            autoRotate: true,
-            materialStyle: 'metallic'
-          });
+        const prod = this.currentAnalysisResult || { productName: 'Smart Helmet', productType: 'Consumer Product' };
+        if (window.CAD3DViewer) {
+          if (!this.viewer3DPageInstance) {
+            this.viewer3DPageInstance = new window.CAD3DViewer('main-3d-canvas-container', {
+              autoRotate: true,
+              materialStyle: 'metallic',
+              productName: prod.productName,
+              productType: prod.productType
+            });
+          } else {
+            const detectedShape = this.viewer3DPageInstance.detectShapeFromProduct(prod.productName, prod.productType);
+            this.viewer3DPageInstance.setModelShape(detectedShape);
+            const selectShape = document.getElementById('select-3d-shape');
+            if (selectShape) selectShape.value = detectedShape;
+          }
         }
       }, 100);
     } else if (viewId === 'history-page') {
@@ -406,6 +416,14 @@ class MethodWiseApp {
       this.standalone2DViewer.updateDimensions(l, w, h, unit);
     }
   }
+
+  change3DShape(shapeType) {
+    if (this.viewer3DPageInstance) {
+      this.viewer3DPageInstance.setModelShape(shapeType);
+      this.showToast(`Updated 3D CAD geometry shape to ${shapeType.toUpperCase()}`, 'info');
+    }
+  }
+
 
   updateCostAnalysisFromSlider(qty) {
     qty = parseInt(qty) || 5000;

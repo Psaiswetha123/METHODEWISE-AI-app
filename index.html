@@ -937,6 +937,15 @@
             <p style="color: var(--text-muted); font-size: 0.9rem;">Interactive 3D WebGL Model Orbit & Structural CAD Preview</p>
           </div>
           <div style="display: flex; gap: 10px;">
+            <select id="select-3d-shape" class="form-control" style="width: auto; font-weight: 600; color: var(--accent-cyan);" onchange="window.app.change3DShape(this.value)">
+              <option value="helmet">3D CAD Shape: Smart Helmet & Visor</option>
+              <option value="medical">3D CAD Shape: Medical Syringe Pump Chassis</option>
+              <option value="drone">3D CAD Shape: Autonomous Drone Quadcopter Frame</option>
+              <option value="thermal">3D CAD Shape: EV Battery Thermal Cooling Plate</option>
+              <option value="impeller">3D CAD Shape: Aerospace Jet Engine Impeller</option>
+              <option value="robot">3D CAD Shape: Robotic Arm Joint Casing</option>
+              <option value="custom">3D CAD Shape: Custom Industrial Enclosure</option>
+            </select>
             <select id="select-3d-shading" class="form-control" style="width: auto;">
               <option value="metallic">Shading: PBR Metallic</option>
               <option value="plastic">Shading: Molded Plastic</option>
