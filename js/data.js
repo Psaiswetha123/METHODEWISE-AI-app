@@ -447,6 +447,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 92,
     dimensions: { length: 280, width: 220, height: 180, weight: 850, unit: 'mm' },
     quantity: 5000,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><path d="M40 90C40 50 70 30 100 30C130 30 160 50 160 90H140C140 65 120 48 100 48C80 48 60 65 60 90H40Z" fill="%2300f2fe" opacity="0.85"/><path d="M55 82C65 72 82 66 100 66C118 66 135 72 145 82" stroke="%2338bdf8" stroke-width="4" stroke-linecap="round"/><circle cx="100" cy="40" r="4" fill="%2310b981"/><text x="100" y="122" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: Smart Helmet Visor</text></svg>',
     description: 'Lightweight impact-resistant smart protective helmet with integrated Bluetooth & LED telemetry.'
   },
   {
@@ -465,6 +466,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 89,
     dimensions: { length: 150, width: 100, height: 80, weight: 420, unit: 'mm' },
     quantity: 250,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><rect x="50" y="45" width="100" height="40" rx="8" fill="%231e293b" stroke="%2300f2fe" stroke-width="2"/><rect x="65" y="55" width="70" height="20" rx="4" fill="%2300f2fe" opacity="0.3"/><polygon points="150,55 170,65 150,75" fill="%2310b981"/><circle cx="45" cy="65" r="10" fill="%237928ca"/><text x="100" y="118" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: Medical Infusion Chassis</text></svg>',
     description: 'Sterile high-precision titanium enclosure for critical hospital IV infusion pump modules.'
   },
   {
@@ -483,6 +485,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 85,
     dimensions: { length: 350, width: 350, height: 60, weight: 310, unit: 'mm' },
     quantity: 100,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><line x1="50" y1="35" x2="150" y2="95" stroke="%2338bdf8" stroke-width="6"/><line x1="150" y1="35" x2="50" y2="95" stroke="%2338bdf8" stroke-width="6"/><circle cx="100" cy="65" r="18" fill="%23090e1a" stroke="%2300f2fe" stroke-width="3"/><circle cx="50" cy="35" r="10" fill="%2310b981"/><circle cx="150" cy="35" r="10" fill="%2310b981"/><circle cx="50" cy="95" r="10" fill="%2310b981"/><circle cx="150" cy="95" r="10" fill="%2310b981"/><text x="100" y="122" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: Drone Quadcopter Frame</text></svg>',
     description: 'Ultra-lightweight high-rigidity Quadcopter drone arm assembly for heavy payload operations.'
   },
   {
@@ -501,6 +504,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 94,
     dimensions: { length: 500, width: 400, height: 12, weight: 1400, unit: 'mm' },
     quantity: 2500,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><rect x="35" y="35" width="130" height="60" rx="6" fill="%231e293b" stroke="%2338bdf8" stroke-width="2"/><line x1="50" y1="35" x2="50" y2="95" stroke="%2300f2fe" stroke-width="3"/><line x1="75" y1="35" x2="75" y2="95" stroke="%2300f2fe" stroke-width="3"/><line x1="100" y1="35" x2="100" y2="95" stroke="%2300f2fe" stroke-width="3"/><line x1="125" y1="35" x2="125" y2="95" stroke="%2300f2fe" stroke-width="3"/><line x1="150" y1="35" x2="150" y2="95" stroke="%2300f2fe" stroke-width="3"/><text x="100" y="118" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: EV Thermal Plate</text></svg>',
     description: 'High heat dissipation cooling manifold plate for electric vehicle battery pack heat exchange.'
   },
   {
@@ -519,6 +523,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 84,
     dimensions: { length: 220, width: 220, height: 140, weight: 2800, unit: 'mm' },
     quantity: 50,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><circle cx="100" cy="60" r="32" fill="%231e293b" stroke="%237928ca" stroke-width="3"/><path d="M100 28 L100 92 M68 60 L132 60 M77 37 L123 83 M77 83 L123 37" stroke="%2300f2fe" stroke-width="4" stroke-linecap="round"/><circle cx="100" cy="60" r="10" fill="%2310b981"/><text x="100" y="118" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: Jet Turbine Impeller</text></svg>',
     description: '5-Axis CNC milled high-temperature nickel superalloy turbomachinery compressor impeller.'
   },
   {
@@ -537,6 +542,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 91,
     dimensions: { length: 190, width: 160, height: 130, weight: 1150, unit: 'mm' },
     quantity: 1200,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><circle cx="100" cy="60" r="28" fill="%231e293b" stroke="%2300f2fe" stroke-width="3"/><rect x="85" y="20" width="30" height="80" rx="4" fill="%2300f2fe" opacity="0.3"/><circle cx="100" cy="60" r="12" fill="%2310b981"/><text x="100" y="118" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: Robotic Arm Joint</text></svg>',
     description: 'High-torque articulated robot elbow joint casing engineered for 6-DOF industrial cobots.'
   },
   {
@@ -555,6 +561,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 88,
     dimensions: { length: 140, width: 70, height: 50, weight: 290, unit: 'mm' },
     quantity: 20,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><path d="M100 25 C120 25 125 45 110 65 L90 95 C85 102 75 105 70 100" stroke="%2300f2fe" stroke-width="7" stroke-linecap="round"/><circle cx="100" cy="25" r="12" fill="%2310b981"/><text x="100" y="122" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: Hip Stem Implant</text></svg>',
     description: 'Patient-customized 3D DMLS printed porous trabecular titanium femoral stem implant.'
   },
   {
@@ -573,6 +580,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 95,
     dimensions: { length: 650, width: 480, height: 380, weight: 18500, unit: 'mm' },
     quantity: 800,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><rect x="45" y="30" width="110" height="65" rx="8" fill="%231e293b" stroke="%23f59e0b" stroke-width="2"/><circle cx="80" cy="62" r="16" stroke="%2300f2fe" stroke-width="3"/><circle cx="120" cy="62" r="12" stroke="%2310b981" stroke-width="3"/><text x="100" y="118" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: Heavy Gearbox Casing</text></svg>',
     description: 'Heavy duty sand-cast vibration damping gear reducer housing for wind turbine drives.'
   },
   {
@@ -591,6 +599,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 90,
     dimensions: { length: 240, width: 180, height: 110, weight: 2200, unit: 'mm' },
     quantity: 400,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><path d="M40 40 H160 V85 H40 Z" fill="%231e293b" stroke="%23ef4444" stroke-width="2"/><circle cx="70" cy="62" r="10" fill="%2300f2fe"/><circle cx="100" cy="62" r="10" fill="%2300f2fe"/><circle cx="130" cy="62" r="10" fill="%2300f2fe"/><text x="100" y="118" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: 6-Piston Caliper Body</text></svg>',
     description: 'Monoblock 6-piston high thermal capacity racing brake caliper body.'
   },
   {
@@ -609,6 +618,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 98,
     dimensions: { length: 400, width: 120, height: 80, weight: 950, unit: 'mm' },
     quantity: 50000,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><path d="M45 85 L85 35 L125 35 L155 85 Z" fill="%231e293b" stroke="%2310b981" stroke-width="2"/><circle cx="85" cy="55" r="5" fill="%2300f2fe"/><circle cx="115" cy="55" r="5" fill="%2300f2fe"/><text x="100" y="118" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: Solar Racking Bracket</text></svg>',
     description: 'Corrosion resistant high-speed fiber laser cut rooftop solar racking bracket.'
   },
   {
@@ -627,6 +637,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 96,
     dimensions: { length: 48, width: 42, height: 14, weight: 28, unit: 'mm' },
     quantity: 100000,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><rect x="65" y="30" width="70" height="70" rx="18" fill="%231e293b" stroke="%23c084fc" stroke-width="3"/><rect x="75" y="40" width="50" height="50" rx="10" fill="%2300f2fe" opacity="0.3"/><text x="100" y="120" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: Smartwatch Bezel Case</text></svg>',
     description: 'High optical clarity shatterproof water-resistant smartwatch outer bezel bumper.'
   },
   {
@@ -645,6 +656,7 @@ const PREVIOUS_PROJECTS = [
     manufacturabilityScore: 92,
     dimensions: { length: 180, width: 180, height: 160, weight: 480, unit: 'mm' },
     quantity: 150,
+    image: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140" fill="none"><rect width="200" height="140" rx="12" fill="%23090e1a"/><path d="M50 35 L150 35 L130 85 L70 85 Z" fill="%231e293b" stroke="%2338bdf8" stroke-width="2"/><circle cx="100" cy="60" r="14" fill="%2300f2fe"/><text x="100" y="118" font-family="sans-serif" font-size="10" font-weight="bold" fill="%2394a3b8" text-anchor="middle">CAD: ROV Thruster Duct</text></svg>',
     description: 'Hydrodynamic duct nozzle for deep-sea subsea remotely operated vehicle propulsion.'
   }
 ];

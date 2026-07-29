@@ -956,19 +956,23 @@
         </div>
 
         <div class="viewer-3d-wrapper">
-          <div class="viewer-toolbar">
-            <button id="btn-3d-orbit" class="btn btn-ghost btn-sm" title="Toggle 360 Auto-Orbit">
-              <i data-lucide="rotate-cw"></i> 360° Orbit
-            </button>
-            <button id="btn-3d-wireframe" class="btn btn-ghost btn-sm" title="Toggle Wireframe">
-              <i data-lucide="grid"></i> Wireframe
-            </button>
-            <button id="btn-3d-explode" class="btn btn-ghost btn-sm" title="Toggle Explode Assembly View">
-              <i data-lucide="layers"></i> Explode View
-            </button>
-            <button id="btn-3d-reset" class="btn btn-ghost btn-sm" title="Reset View">
-              <i data-lucide="refresh-cw"></i> Reset View
-            </button>
+          <div class="viewer-toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="3d-render-mode-btns">
+              <button class="btn btn-primary btn-xs active" onclick="window.app.set3DRenderMode('solid')">Solid CAD</button>
+              <button class="btn btn-outline btn-xs" onclick="window.app.set3DRenderMode('exploded')">Exploded View</button>
+              <button class="btn btn-outline btn-xs" onclick="window.app.set3DRenderMode('fea')">FEA Stress Map</button>
+              <button class="btn btn-outline btn-xs" onclick="window.app.set3DRenderMode('photo')">Photorealistic</button>
+              <button class="btn btn-outline btn-xs" onclick="window.app.set3DRenderMode('wireframe')">Wireframe</button>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button id="btn-3d-orbit" class="btn btn-ghost btn-sm" title="Toggle 360 Auto-Orbit">
+                <i data-lucide="rotate-cw"></i> 360° Orbit
+              </button>
+              <button id="btn-3d-reset" class="btn btn-ghost btn-sm" title="Reset View">
+                <i data-lucide="refresh-cw"></i> Reset View
+              </button>
+            </div>
           </div>
 
           <div id="main-3d-canvas-container"></div>

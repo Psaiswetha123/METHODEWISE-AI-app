@@ -1,7 +1,8 @@
 /**
  * MethodWise AI - Interactive 3D WebGL CAD Visualization Module
  * Powered by Three.js
- * Generates custom 3D WebGL CAD geometries dynamically for every product design.
+ * Generates custom 3D WebGL CAD geometries dynamically for every product design
+ * with 5 distinct 3D Render Models (Solid CAD, Exploded Assembly, FEA Stress Map, Photorealistic, Wireframe Mesh).
  */
 
 class CAD3DViewer {
@@ -13,6 +14,7 @@ class CAD3DViewer {
       autoRotate: true,
       wireframe: false,
       materialStyle: 'metallic', // 'metallic', 'plastic', 'clay', 'heatmap'
+      renderMode: 'solid', // 'solid', 'exploded', 'fea', 'photo', 'wireframe'
       showGrid: true,
       productName: 'Smart Helmet',
       productType: 'Consumer Product',
@@ -25,6 +27,7 @@ class CAD3DViewer {
     this.meshGroup = null;
     this.mainMesh = null;
     this.innerCoreMesh = null;
+    this.extraMeshes = [];
     this.gridHelper = null;
     this.animId = null;
     this.isExploded = false;
@@ -114,6 +117,7 @@ class CAD3DViewer {
 
   createModelGeometry(shapeType) {
     this.options.shapeType = shapeType;
+    this.extraMeshes = [];
     while (this.meshGroup.children.length > 0) {
       const child = this.meshGroup.children[0];
       this.meshGroup.remove(child);
@@ -121,7 +125,7 @@ class CAD3DViewer {
 
     let matProps = this.getMaterialProps(this.options.materialStyle);
     this.mainMaterial = new THREE.MeshStandardMaterial(matProps);
-    this.mainMaterial.wireframe = this.options.wireframe;
+    this.mainMaterial.wireframe = (this.options.renderMode === 'wireframe') || this.options.wireframe;
 
     const accentMat = new THREE.MeshStandardMaterial({
       color: 0x00f2fe,
@@ -161,57 +165,56 @@ class CAD3DViewer {
       ringMesh.rotation.x = Math.PI / 2;
       ringMesh.position.y = -0.15;
       this.meshGroup.add(ringMesh);
+      this.extraMeshes.push(ringMesh);
 
     } else if (shapeType === 'medical') {
-      // 2. MEDICAL SYRINGE PUMP CHASSIS (Cylindrical Module)
+      // 2. MEDICAL SYRINGE PUMP CHASSIS
       const bodyGeo = new THREE.CylinderGeometry(0.9, 0.9, 2.2, 32);
       this.mainMesh = new THREE.Mesh(bodyGeo, this.mainMaterial);
       this.meshGroup.add(this.mainMesh);
 
-      // Fluid Core Chamber
       const coreGeo = new THREE.CylinderGeometry(0.65, 0.65, 1.8, 24);
       this.innerCoreMesh = new THREE.Mesh(coreGeo, accentMat);
       this.meshGroup.add(this.innerCoreMesh);
 
-      // Metallic Cone Tip
       const tipGeo = new THREE.ConeGeometry(0.4, 0.8, 24);
       const tipMesh = new THREE.Mesh(tipGeo, darkMat);
       tipMesh.position.y = 1.5;
       this.meshGroup.add(tipMesh);
+      this.extraMeshes.push(tipMesh);
 
-      // Flange Rings
       [0.6, -0.6].forEach(py => {
         const flangeGeo = new THREE.TorusGeometry(1.02, 0.07, 16, 32);
         const flangeMesh = new THREE.Mesh(flangeGeo, darkMat);
         flangeMesh.rotation.x = Math.PI / 2;
         flangeMesh.position.y = py;
         this.meshGroup.add(flangeMesh);
+        this.extraMeshes.push(flangeMesh);
       });
 
     } else if (shapeType === 'drone') {
-      // 3. AUTONOMOUS DRONE FRAME (Quadcopter Cross-Arm)
+      // 3. AUTONOMOUS DRONE FRAME
       const hubGeo = new THREE.CylinderGeometry(0.7, 0.7, 0.25, 8);
       this.mainMesh = new THREE.Mesh(hubGeo, this.mainMaterial);
       this.meshGroup.add(this.mainMesh);
 
-      // Central Energy Core
       const coreGeo = new THREE.SphereGeometry(0.45, 16, 16);
       this.innerCoreMesh = new THREE.Mesh(coreGeo, accentMat);
       this.meshGroup.add(this.innerCoreMesh);
 
-      // 4 Cross Arms + Motor Pods
       for (let i = 0; i < 4; i++) {
         const angle = (i * Math.PI) / 2 + Math.PI / 4;
         const armGeo = new THREE.BoxGeometry(0.18, 0.12, 2.2);
         const armMesh = new THREE.Mesh(armGeo, darkMat);
         armMesh.rotation.y = angle;
         this.meshGroup.add(armMesh);
+        this.extraMeshes.push(armMesh);
 
-        // Motor Pod
         const podGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.3, 16);
         const podMesh = new THREE.Mesh(podGeo, accentMat);
         podMesh.position.set(Math.cos(angle) * 1.1, 0, Math.sin(angle) * 1.1);
         this.meshGroup.add(podMesh);
+        this.extraMeshes.push(podMesh);
       }
 
     } else if (shapeType === 'thermal') {
@@ -220,32 +223,29 @@ class CAD3DViewer {
       this.mainMesh = new THREE.Mesh(slabGeo, this.mainMaterial);
       this.meshGroup.add(this.mainMesh);
 
-      // Internal Cooling Core Channel
       const coreGeo = new THREE.BoxGeometry(2.6, 0.15, 1.8);
       this.innerCoreMesh = new THREE.Mesh(coreGeo, accentMat);
       this.meshGroup.add(this.innerCoreMesh);
 
-      // Radiator Cooling Fins
       for (let x = -1.1; x <= 1.1; x += 0.3) {
         const finGeo = new THREE.BoxGeometry(0.08, 0.35, 2.0);
         const finMesh = new THREE.Mesh(finGeo, darkMat);
         finMesh.position.set(x, 0.18, 0);
         this.meshGroup.add(finMesh);
+        this.extraMeshes.push(finMesh);
       }
 
     } else if (shapeType === 'impeller') {
-      // 5. AEROSPACE JET ENGINE IMPELLER (Turbine Blades)
+      // 5. AEROSPACE JET ENGINE IMPELLER
       const hubGeo = new THREE.ConeGeometry(0.75, 1.6, 24);
       this.mainMesh = new THREE.Mesh(hubGeo, this.mainMaterial);
       this.mainMesh.rotation.x = Math.PI;
       this.meshGroup.add(this.mainMesh);
 
-      // Central Shaft Core
       const coreGeo = new THREE.CylinderGeometry(0.35, 0.35, 1.8, 16);
       this.innerCoreMesh = new THREE.Mesh(coreGeo, accentMat);
       this.meshGroup.add(this.innerCoreMesh);
 
-      // 8 Swept Aerodynamic Blades
       for (let i = 0; i < 8; i++) {
         const angle = (i * Math.PI) / 4;
         const bladeGeo = new THREE.BoxGeometry(0.08, 1.2, 0.6);
@@ -254,25 +254,25 @@ class CAD3DViewer {
         bladeMesh.rotation.y = angle + Math.PI / 6;
         bladeMesh.rotation.z = Math.PI / 12;
         this.meshGroup.add(bladeMesh);
+        this.extraMeshes.push(bladeMesh);
       }
 
     } else if (shapeType === 'robot') {
-      // 6. ROBOTIC ARM JOINT HOUSING (Articulated Joint)
+      // 6. ROBOTIC ARM JOINT HOUSING
       const jointGeo = new THREE.SphereGeometry(1.2, 24, 24);
       this.mainMesh = new THREE.Mesh(jointGeo, this.mainMaterial);
       this.meshGroup.add(this.mainMesh);
 
-      // Inner Core Bearing
       const coreGeo = new THREE.CylinderGeometry(0.75, 0.75, 1.5, 20);
       this.innerCoreMesh = new THREE.Mesh(coreGeo, accentMat);
       this.innerCoreMesh.rotation.z = Math.PI / 2;
       this.meshGroup.add(this.innerCoreMesh);
 
-      // Bevel Gear Teeth Ring
       const gearGeo = new THREE.TorusGeometry(1.22, 0.12, 16, 32);
       const gearMesh = new THREE.Mesh(gearGeo, darkMat);
       gearMesh.rotation.x = Math.PI / 2;
       this.meshGroup.add(gearMesh);
+      this.extraMeshes.push(gearMesh);
 
     } else {
       // 7. CUSTOM INDUSTRIAL HOUSING
@@ -283,6 +283,57 @@ class CAD3DViewer {
       const coreGeo = new THREE.CylinderGeometry(0.65, 0.65, 1.6, 24);
       this.innerCoreMesh = new THREE.Mesh(coreGeo, accentMat);
       this.meshGroup.add(this.innerCoreMesh);
+    }
+  }
+
+  setRenderMode(mode) {
+    this.options.renderMode = mode;
+
+    if (mode === 'wireframe') {
+      if (this.mainMaterial) this.mainMaterial.wireframe = true;
+      if (this.innerCoreMesh) this.innerCoreMesh.position.y = 0;
+    } else if (mode === 'exploded') {
+      if (this.mainMaterial) this.mainMaterial.wireframe = false;
+      if (this.innerCoreMesh) {
+        this.innerCoreMesh.position.y = 1.4;
+      }
+      this.extraMeshes.forEach((m, idx) => {
+        m.position.y += (idx % 2 === 0 ? 0.6 : -0.6);
+      });
+    } else if (mode === 'fea') {
+      // FEA Stress Heatmap Mode (Red high stress nodes, yellow transitions)
+      if (this.mainMaterial) {
+        this.mainMaterial.wireframe = false;
+        this.mainMaterial.color.setHex(0xef4444); // Red high stress
+        this.mainMaterial.emissive.setHex(0x7f1d1d);
+        this.mainMaterial.emissiveIntensity = 0.5;
+        this.mainMaterial.needsUpdate = true;
+      }
+      if (this.innerCoreMesh) {
+        this.innerCoreMesh.material.color.setHex(0xf59e0b); // Yellow mid stress
+      }
+    } else if (mode === 'photo') {
+      // Photorealistic Studio Render Mode
+      if (this.mainMaterial) {
+        this.mainMaterial.wireframe = false;
+        this.mainMaterial.color.setHex(0x38bdf8);
+        this.mainMaterial.metalness = 0.98;
+        this.mainMaterial.roughness = 0.05;
+        this.mainMaterial.emissive.setHex(0x002233);
+        this.mainMaterial.needsUpdate = true;
+      }
+    } else {
+      // Standard Solid CAD
+      if (this.mainMaterial) {
+        this.mainMaterial.wireframe = false;
+        const props = this.getMaterialProps(this.options.materialStyle);
+        this.mainMaterial.color.setHex(props.color);
+        this.mainMaterial.metalness = props.metalness;
+        this.mainMaterial.roughness = props.roughness;
+        this.mainMaterial.emissive.setHex(0x000000);
+        this.mainMaterial.needsUpdate = true;
+      }
+      if (this.innerCoreMesh) this.innerCoreMesh.position.y = 0;
     }
   }
 
@@ -342,20 +393,7 @@ class CAD3DViewer {
 
   toggleExplode() {
     this.isExploded = !this.isExploded;
-    if (this.innerCoreMesh) {
-      let targetY = this.isExploded ? 1.5 : 0;
-      let duration = 500;
-      let startY = this.innerCoreMesh.position.y;
-      let startTime = performance.now();
-
-      const animateExplode = (now) => {
-        let elapsed = now - startTime;
-        let progress = Math.min(1, elapsed / duration);
-        this.innerCoreMesh.position.y = startY + (targetY - startY) * progress;
-        if (progress < 1) requestAnimationFrame(animateExplode);
-      };
-      requestAnimationFrame(animateExplode);
-    }
+    this.setRenderMode(this.isExploded ? 'exploded' : 'solid');
     return this.isExploded;
   }
 

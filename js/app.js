@@ -645,6 +645,25 @@ class MethodWiseApp {
     }
   }
 
+  set3DRenderMode(mode) {
+    if (this.viewer3DPageInstance) {
+      this.viewer3DPageInstance.setRenderMode(mode);
+      this.showToast(`Switched 3D View Model to ${mode.toUpperCase()}`, 'info');
+    }
+    const container = document.getElementById('3d-render-mode-btns');
+    if (container) {
+      container.querySelectorAll('button').forEach(btn => {
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${mode}'`)) {
+          btn.classList.add('active', 'btn-primary');
+          btn.classList.remove('btn-outline');
+        } else {
+          btn.classList.remove('active', 'btn-primary');
+          btn.classList.add('btn-outline');
+        }
+      });
+    }
+  }
+
   renderHistoryPage() {
     const container = document.getElementById('history-cards-grid');
     if (!container) return;
@@ -660,6 +679,7 @@ class MethodWiseApp {
           <span class="project-type-badge">${p.type}</span>
           <span class="project-score-badge">AI Score: <strong>${p.score}</strong>/10</span>
         </div>
+        ${p.image ? `<div style="text-align: center; margin: 10px 0;"><img src="${p.image}" alt="${p.name}" style="width: 100%; height: 110px; object-fit: contain; border-radius: var(--radius-sm); border: 1px solid var(--border-color);"></div>` : ''}
         <h3 class="project-card-title">${p.name}</h3>
         <p class="project-card-date">Created: ${p.date}</p>
         
