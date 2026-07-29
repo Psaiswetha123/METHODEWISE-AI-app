@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MethodWise AI – Smart Product Design & Manufacturing Decision Advisor</title>
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Three.js 3D WebGL Library CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/wizard.css">
+  <link rel="stylesheet" href="css/viewer.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- AI Evaluation Thinking Modal Overlay -->
+  <div id="ai-thinking-overlay" class="ai-overlay hidden">
+    <div class="ai-spinner"></div>
+    <h3 style="font-size: 1.4rem; color: #ffffff;">AI is analyzing your product...</h3>
+    <p style="color: #94a3b8; font-size: 0.95rem;">Evaluating Multi-Criteria Material Selection & Manufacturing DFM Algorithms</p>
+  </div>
+
+
+  <!-- ========================================================================== -->
+  <!-- 1. LOGIN SCREEN (First Screen) -->
+  <!-- ========================================================================== -->
+  <div id="login-screen" class="auth-wrapper">
+    <canvas id="auth-bg-canvas"></canvas>
+
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="auth-logo-row">
+          <div class="auth-logo-icon">
+            <i data-lucide="cpu"></i>
+          </div>
+          <span class="auth-title">MethodWise AI</span>
+        </div>
+        <p class="auth-subtitle">Smart Product Design & Manufacturing Decision Advisor</p>
+      </div>
+
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label class="form-label">Work Email</label>
+          <input type="email" id="login-email" class="form-control" placeholder="engineer@company.com" value="engineer@methodwise.ai" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••••••" value="demo12345" required>
+        </div>
+
+        <div class="auth-options">
+          <label class="auth-remember">
+            <input type="checkbox" id="remember-me" checked>
+            <span>Remember me</span>
+          </label>
+          <a href="#" onclick="alert('Password reset link sent to registered email address.'); return false;">Forgot password?</a>
+        </div>
+
+        <div class="auth-btn-row">
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+            <i data-lucide="log-in"></i> Sign In to Advisor Platform
+          </button>
+          <button type="button" id="demo-login-btn" class="btn btn-outline" style="width: 100%;">
+            <i data-lucide="zap"></i> Demo Quick Auto-Login
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ========================================================================== -->
+  <!-- 2. MAIN APPLICATION SHELL & DASHBOARD -->
+  <!-- ========================================================================== -->
+  <div id="app-shell" class="app-shell hidden">
+
+    <!-- SIDEBAR MENU -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-icon">MW</div>
+          <div class="sidebar-logo-text">MethodWise AI</div>
+        </div>
+        <button id="sidebar-toggle" class="btn btn-ghost btn-sm" title="Toggle Sidebar">
+          <i data-lucide="panel-left-close"></i>
+        </button>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="sidebar-nav-item active" data-target-view="dashboard-overview">
+          <i data-lucide="layout-dashboard"></i> <span>Dashboard</span>
+        </li>
+        <li class="sidebar-nav-item" data-target-view="create-product-wizard">
+          <i data-lucide="plus-circle"></i> <span>Create New Product</span>
+        </li>
+        <li class="sidebar-nav-item" data-target-view="material-advisor-page">
+          <i data-lucide="flask-conical"></i> <span>Material Advisor</span>
+        </li>
+        <li class="sidebar-nav-item" data-target-view="manufacturing-advisor-page">
+          <i data-lucide="cog"></i> <span>Manufacturing Advisor</span>
+        </li>
+        <li class="sidebar-nav-item" data-target-view="cost-analysis-page">
+          <i data-lucide="badge-indian-rupee"></i> <span>Cost Analysis</span>
+        </li>
+        <li class="sidebar-nav-item" data-target-view="3d-preview-page">
+          <i data-lucide="box"></i> <span>3D Design Preview</span>
+        </li>
+        <li class="sidebar-nav-item" data-target-view="history-page">
+          <i data-lucide="folder-archive"></i> <span>Previous Designs</span>
+        </li>
+        <li class="sidebar-nav-item" data-target-view="settings-page">
+          <i data-lucide="settings"></i> <span>Settings</span>
+        </li>
+      </ul>
+
+      <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color);">
+        <button id="logout-btn" class="btn btn-outline btn-sm" style="width: 100%;">
+          <i data-lucide="log-out"></i> Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- TOPBAR NAVIGATION -->
+    <header class="app-topbar">
+      <div class="topbar-search">
+        <i data-lucide="search" style="color: var(--text-dim);"></i>
+        <input type="text" id="global-search-input" placeholder="Search previous designs, materials, or processes..." autocomplete="off">
+        <div id="global-search-dropdown" class="global-search-dropdown hidden"></div>
+      </div>
+
+      <div class="topbar-user-area">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="badge badge-emerald"><i data-lucide="activity" style="width: 12px;"></i> AI Engine Active</span>
+        </div>
+
+        <button class="btn btn-ghost" style="position: relative;" title="Help & Terminology Guide" onclick="window.app.openHelpModal()">
+          <i data-lucide="help-circle"></i>
+        </button>
+
+        <button class="btn btn-ghost" style="position: relative;" title="Notifications">
+          <i data-lucide="bell"></i>
+          <span style="position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--accent-cyan); border-radius: 50%;"></span>
+        </button>
+
+        <div class="user-profile-badge" data-target-view="settings-page">
+          <div class="avatar-circle">PE</div>
+          <div>
+            <div style="font-weight: 600; font-size: 0.9rem;">Lead CAD Engineer</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">MethodWise Direct Lab</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+
+    <!-- MAIN CONTENT VIEWPORT -->
+    <main class="app-main">
+
+      <!-- ====================================================================== -->
+      <!-- VIEW: DASHBOARD OVERVIEW -->
+      <!-- ====================================================================== -->
+      <section id="dashboard-overview" class="view-section active">
+        <!-- Hero CTA Banner -->
+        <div class="dash-hero-banner">
+          <div>
+            <span class="badge badge-cyan" style="margin-bottom: 12px;">MethodWise AI Advisor v2.4</span>
+            <h1 class="dash-hero-title">Smart Product Design & Manufacturing Decision Advisor</h1>
+            <p style="color: var(--text-muted); max-width: 620px;">
+              Accelerate engineering decisions. Optimize material selection, DFM manufacturability, and unit cost curves using multi-criteria AI algorithms.
+            </p>
+          </div>
+          <button class="btn btn-primary btn-lg" data-target-view="create-product-wizard">
+            <i data-lucide="sparkles"></i> Start New Product Design Wizard
+          </button>
+        </div>
+
+        <!-- Quick Stats Cards Grid -->
+        <div class="stats-grid">
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>Active Design Projects</span>
+              <i data-lucide="box" class="icon-accent"></i>
+            </div>
+            <div id="dash-stat-active" class="stat-value">4</div>
+            <div style="font-size: 0.78rem; color: var(--accent-emerald); margin-top: 6px;">+2 created this week</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>Cost Optimization Avg</span>
+              <i data-lucide="trending-down" style="color: var(--accent-emerald);"></i>
+            </div>
+            <div id="dash-stat-savings" class="stat-value">₹1,45,000</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">Estimated batch savings</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>Avg AI Design Score</span>
+              <i data-lucide="award" style="color: var(--accent-amber);"></i>
+            </div>
+            <div id="dash-stat-avgscore" class="stat-value">8.8 / 10</div>
+            <div style="font-size: 0.78rem; color: var(--accent-cyan); margin-top: 6px;">Optimal DFM rating</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>AI Recommendation Accuracy</span>
+              <i data-lucide="target" style="color: var(--accent-violet);"></i>
+            </div>
+            <div id="dash-stat-accuracy" class="stat-value">99.4%</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">Based on 12k+ DFM simulations</div>
+          </div>
+        </div>
+
+        <!-- Dashboard Widgets Grid -->
+        <div class="dash-widgets-grid">
+          
+          <!-- AI Recommendation Summary Cards -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="glass-card" style="padding: 24px;">
+              <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                <i data-lucide="flask-conical" class="icon-accent"></i> Featured AI Material Recommendation
+              </h3>
+              <div style="display: flex; gap: 20px; align-items: center;">
+                <div style="background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: var(--radius-md); padding: 20px; text-align: center; min-width: 160px;">
+                  <span class="badge badge-cyan">Top Choice</span>
+                  <h4 style="font-size: 1.2rem; margin-top: 8px;">ABS Plastic</h4>
+                  <p style="font-size: 0.8rem; color: var(--accent-emerald); margin-top: 4px;">₹120 - ₹180 / kg</p>
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">
+                  <p style="margin-bottom: 8px;">
+                    <strong>Why ABS Plastic?</strong> High impact strength, lightweight density (1.05 g/cm³), and exceptional injection molding fluid flow characteristics for housing enclosures.
+                  </p>
+                  <div style="display: flex; gap: 16px; font-size: 0.8rem;">
+                    <span>Tensile Strength: <strong>45 MPa</strong></span>
+                    <span>Durability: <strong>78%</strong></span>
+                    <span>Heat Temp: <strong>85°C</strong></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Manufacturing Process Selection Overview -->
+            <div class="glass-card" style="padding: 24px;">
+              <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                <i data-lucide="cog" class="icon-accent"></i> Recommended Manufacturing Process Selection
+              </h3>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                <div style="background: rgba(8, 13, 26, 0.6); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                  <div style="color: var(--accent-cyan); margin-bottom: 6px;"><i data-lucide="package-check"></i></div>
+                  <h4 style="font-size: 0.95rem;">Injection Molding</h4>
+                  <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">Optimal for batch > 1,000 units</p>
+                </div>
+                <div style="background: rgba(8, 13, 26, 0.6); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                  <div style="color: var(--accent-emerald); margin-bottom: 6px;"><i data-lucide="cpu"></i></div>
+                  <h4 style="font-size: 0.95rem;">CNC Machining</h4>
+                  <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">Precision tolerance ±0.01mm</p>
+                </div>
+                <div style="background: rgba(8, 13, 26, 0.6); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                  <div style="color: #c084fc; margin-bottom: 6px;"><i data-lucide="box"></i></div>
+                  <h4 style="font-size: 0.95rem;">3D Printing (SLS)</h4>
+                  <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">Zero tooling lead time</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Analysis Reports Activity Feed -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+              <span><i data-lucide="file-text" class="icon-accent"></i> Recent Activity</span>
+              <button class="btn btn-ghost btn-sm" data-target-view="history-page">View All</button>
+            </h3>
+            <div id="dash-recent-activity" style="display: flex; flex-direction: column; gap: 14px;">
+              <!-- Populated dynamically by JS -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- ====================================================================== -->
+      <!-- 3. PRODUCT REQUIREMENT INPUT MODULE (5-Step Form / Wizard) -->
+      <!-- ====================================================================== -->
+      <section id="create-product-wizard" class="view-section hidden">
+        <div class="wizard-container">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div>
+              <h2 style="font-size: 1.6rem;">Product Requirement Input Module</h2>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">Multi-Criteria AI Design & Manufacturing Specification Wizard</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button id="load-sample-helmet" class="btn btn-outline btn-sm">
+                <i data-lucide="sparkles"></i> Preset: Smart Helmet
+              </button>
+              <button id="load-sample-medical" class="btn btn-outline btn-sm">
+                <i data-lucide="activity"></i> Preset: Medical Pump
+              </button>
+            </div>
+          </div>
+
+          <!-- Step Indicators -->
+          <div class="wizard-progress-bar">
+            <div id="step-indicator-1" class="step-indicator active" onclick="window.wizard.goToStep(1)">
+              <div class="step-number-bubble">1</div>
+              <span class="step-label">Details</span>
+            </div>
+            <div id="step-indicator-2" class="step-indicator" onclick="window.wizard.goToStep(2)">
+              <div class="step-number-bubble">2</div>
+              <span class="step-label">Dimensions</span>
+            </div>
+            <div id="step-indicator-3" class="step-indicator" onclick="window.wizard.goToStep(3)">
+              <div class="step-number-bubble">3</div>
+              <span class="step-label">Material</span>
+            </div>
+            <div id="step-indicator-4" class="step-indicator" onclick="window.wizard.goToStep(4)">
+              <div class="step-number-bubble">4</div>
+              <span class="step-label">Manufacturing</span>
+            </div>
+            <div id="step-indicator-5" class="step-indicator" onclick="window.wizard.goToStep(5)">
+              <div class="step-number-bubble">5</div>
+              <span class="step-label">Cost Budget</span>
+            </div>
+          </div>
+
+          <!-- STEP 1: PRODUCT DETAILS -->
+          <div id="wizard-step-1" class="wizard-panel active">
+            <h3 style="margin-bottom: 20px; font-size: 1.2rem; color: var(--accent-cyan);">STEP 1: PRODUCT DETAILS</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div class="form-group">
+                <label class="form-label">Product Name</label>
+                <input type="text" id="prod-name" class="form-control" placeholder="e.g. Smart Helmet" value="Smart Helmet">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Product Type</label>
+                <select id="prod-type" class="form-control">
+                  <option value="Electronics">Electronics</option>
+                  <option value="Automotive">Automotive</option>
+                  <option value="Medical Equipment">Medical Equipment</option>
+                  <option value="Consumer Product" selected>Consumer Product</option>
+                  <option value="Industrial Product">Industrial Product</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Product Description</label>
+              <textarea id="prod-desc" class="form-control" rows="3" placeholder="Describe the physical product assembly...">Lightweight impact-resistant smart protective helmet with integrated Bluetooth & LED telemetry.</textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div class="form-group">
+                <label class="form-label">Product Purpose</label>
+                <input type="text" id="prod-purpose" class="form-control" placeholder="e.g. High impact protection" value="Protective Headwear for Sports & Micro-mobility">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Target Usage Environment</label>
+                <input type="text" id="prod-usage" class="form-control" placeholder="e.g. Extreme Outdoor, High Shock" value="Outdoor Weather, Shock & Vibration">
+              </div>
+            </div>
+          </div>
+
+
+          <!-- STEP 2: DIMENSION REQUIREMENTS -->
+          <div id="wizard-step-2" class="wizard-panel hidden">
+            <h3 style="margin-bottom: 20px; font-size: 1.2rem; color: var(--accent-cyan);">STEP 2: DIMENSION REQUIREMENTS</h3>
+            
+            <div class="dim-grid-layout">
+              <div>
+                <div class="form-group">
+                  <label class="form-label">Unit Selection</label>
+                  <select id="dim-unit" class="form-control">
+                    <option value="mm" selected>Millimeters (mm)</option>
+                    <option value="cm">Centimeters (cm)</option>
+                    <option value="inches">Inches (in)</option>
+                  </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                  <div class="form-group">
+                    <label class="form-label">Length</label>
+                    <input type="number" id="dim-length" class="form-control" value="280" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Width</label>
+                    <input type="number" id="dim-width" class="form-control" value="220" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Height</label>
+                    <input type="number" id="dim-height" class="form-control" value="180" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Estimated Weight (grams)</label>
+                    <input type="number" id="dim-weight" class="form-control" value="850" min="1">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Interactive 3D Model Bounding Visualizer Box -->
+              <div class="dim-3d-visualizer-box">
+                <div class="dim-overlay-badge">
+                  <i data-lucide="box"></i> Live 3D Dimension Scale Model
+                </div>
+                <div id="step2-3d-canvas-container"></div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- STEP 3: MATERIAL REQUIREMENT -->
+          <div id="wizard-step-3" class="wizard-panel hidden">
+            <h3 style="margin-bottom: 12px; font-size: 1.2rem; color: var(--accent-cyan);">STEP 3: MATERIAL REQUIREMENT</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+              Select a preferred material category or choice to compare engineering properties.
+            </p>
+
+            <div class="mat-cat-tabs">
+              <button class="mat-cat-tab active" onclick="window.wizard.filterMaterials('all')">All Materials</button>
+              <button class="mat-cat-tab" onclick="window.wizard.filterMaterials('Metals')">Metals</button>
+              <button class="mat-cat-tab" onclick="window.wizard.filterMaterials('Plastics')">Plastics</button>
+              <button class="mat-cat-tab" onclick="window.wizard.filterMaterials('Composites')">Composites</button>
+            </div>
+
+            <div id="materials-grid-container" class="materials-grid">
+              <!-- Material Cards Rendered via JS -->
+            </div>
+          </div>
+
+
+          <!-- STEP 4: MANUFACTURING REQUIREMENTS -->
+          <div id="wizard-step-4" class="wizard-panel hidden">
+            <h3 style="margin-bottom: 20px; font-size: 1.2rem; color: var(--accent-cyan);">STEP 4: MANUFACTURING REQUIREMENTS</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div class="form-group">
+                <label class="form-label">Preferred Manufacturing Process</label>
+                <select id="mfg-process-select" class="form-control">
+                  <option value="auto" selected>✨ AI Auto-Recommend Optimal Process</option>
+                  <option value="injection-molding">Injection Molding</option>
+                  <option value="cnc-machining">CNC Machining</option>
+                  <option value="3d-printing">3D Printing (SLS/FDM)</option>
+                  <option value="casting">Casting (Die / Investment)</option>
+                  <option value="sheet-metal">Sheet Metal Fabrication</option>
+                  <option value="laser-cutting">Laser Cutting</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Target Production Quantity (Units)</label>
+                <input type="number" id="mfg-qty" class="form-control" value="5000" min="1" step="100">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+              <div class="form-group">
+                <label class="form-label">Required Precision / Accuracy</label>
+                <select id="mfg-accuracy" class="form-control">
+                  <option value="±0.01 mm">High Precision (± 0.01 mm)</option>
+                  <option value="±0.05 mm" selected>Standard Engineering (± 0.05 mm)</option>
+                  <option value="±0.20 mm">General Fabrication (± 0.20 mm)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Surface Finish Requirement</label>
+                <select id="mfg-surface" class="form-control">
+                  <option value="Ra 0.4 µm">Mirror Polish (Ra 0.4 µm)</option>
+                  <option value="Ra 1.6 µm" selected>Smooth Machined/Molded (Ra 1.6 µm)</option>
+                  <option value="Ra 6.3 µm">Standard Raw Finish (Ra 6.3 µm)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Durability / Life Rating</label>
+                <select id="mfg-durability" class="form-control">
+                  <option value="Ultra High">Ultra Heavy Duty (10+ Years)</option>
+                  <option value="High" selected>High Durability (5 - 10 Years)</option>
+                  <option value="Standard">Standard Product Lifecycle (2 - 5 Years)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- STEP 5: COST RANGE & BUDGET -->
+          <div id="wizard-step-5" class="wizard-panel hidden">
+            <h3 style="margin-bottom: 12px; font-size: 1.2rem; color: var(--accent-cyan);">STEP 5: COST RANGE & BUDGET</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px;">
+              What is your expected product manufacturing cost range?
+            </p>
+
+            <div class="budget-options-grid">
+              <label class="budget-tier-card">
+                <input type="radio" name="budget-tier" value="low">
+                <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;">Low Budget</div>
+                <div style="font-size: 1.2rem; color: var(--accent-emerald); font-weight: bold;">₹500 - ₹5,000</div>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 8px;">Cost-optimized mass production plastics or sheet components.</p>
+              </label>
+
+              <label class="budget-tier-card selected">
+                <input type="radio" name="budget-tier" value="medium" checked>
+                <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;">Medium Budget</div>
+                <div style="font-size: 1.2rem; color: var(--accent-cyan); font-weight: bold;">₹5,000 - ₹50,000</div>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 8px;">High-grade aluminum, precision polymers, or composite assemblies.</p>
+              </label>
+
+              <label class="budget-tier-card">
+                <input type="radio" name="budget-tier" value="premium">
+                <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;">Premium Budget</div>
+                <div style="font-size: 1.2rem; color: #c084fc; font-weight: bold;">₹50,000+</div>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 8px;">Titanium aerospace alloys, medical bio-compatibility, custom tooling.</p>
+              </label>
+            </div>
+          </div>
+
+
+          <!-- Wizard Navigation Footer Buttons -->
+          <div class="wizard-footer">
+            <button id="wizard-btn-prev" class="btn btn-outline" style="display: none;">
+              <i data-lucide="arrow-left"></i> Previous Step
+            </button>
+            <button id="wizard-btn-next" class="btn btn-primary" style="margin-left: auto;">
+              Next Step <i data-lucide="arrow-right"></i>
+            </button>
+            <button id="wizard-btn-submit" class="btn btn-secondary btn-lg" style="margin-left: auto; display: none;">
+              <i data-lucide="cpu"></i> Generate AI Manufacturing Analysis
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- ====================================================================== -->
+      <!-- 4. AI ANALYSIS RESULT PAGE -->
+      <!-- ====================================================================== -->
+      <section id="ai-results-page" class="view-section hidden">
+        
+        <!-- Feature 1 & 2: Product Summary Card + AI Recommendation Badges -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 24px; border: 1px solid var(--border-glow); background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(8, 13, 26, 0.95));">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+            <h3 style="font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="file-check-2" class="icon-accent"></i> PRODUCT ANALYSIS SUMMARY CARD
+            </h3>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="res-ai-badges-container">
+              <span class="badge-ai-rec"><i data-lucide="check-circle"></i> ✅ AI Recommended</span>
+              <span class="badge-best-choice"><i data-lucide="star"></i> ⭐ Best Choice</span>
+              <span class="badge-cost-eff"><i data-lucide="coins"></i> 💰 Cost Efficient</span>
+              <span class="badge-fast-prod"><i data-lucide="zap"></i> ⚡ Fast Production</span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; background: rgba(8, 13, 26, 0.6); padding: 18px; border-radius: var(--radius-sm);">
+            <div><span style="font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase;">Product Name</span><div id="summary-card-name" style="font-weight: 700; font-size: 1.1rem; color: var(--accent-cyan);">Smart Helmet</div></div>
+            <div><span style="font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase;">Selected Material</span><div id="summary-card-material" style="font-weight: 700; font-size: 1.1rem; color: var(--text-main);">ABS Plastic</div></div>
+            <div><span style="font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase;">Manufacturing Process</span><div id="summary-card-process" style="font-weight: 700; font-size: 1.1rem; color: var(--text-main);">Injection Molding</div></div>
+            <div><span style="font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase;">Estimated Cost</span><div id="summary-card-cost" style="font-weight: 700; font-size: 1.1rem; color: var(--accent-emerald);">₹800 / unit</div></div>
+            <div><span style="font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase;">Est. Production Time</span><div id="summary-card-time" style="font-weight: 700; font-size: 1.1rem; color: var(--accent-amber);">3 - 6 Weeks</div></div>
+          </div>
+        </div>
+
+        <div class="results-hero-card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+            <div>
+              <span class="badge badge-emerald" style="margin-bottom: 10px;">
+                <i data-lucide="check-circle-2"></i> AI Multi-Criteria Optimization Complete
+              </span>
+              <h1 id="res-prod-name" style="font-size: 2rem;">Smart Helmet</h1>
+              <p style="color: var(--text-muted); font-size: 0.95rem;">Recommended Engineering Strategy & Cost Structure</p>
+            </div>
+
+            <!-- Feature 11: Download PDF & Print Report Buttons -->
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button class="btn btn-primary" data-target-view="3d-preview-page">
+                <i data-lucide="box"></i> Preview 3D Model
+              </button>
+              <button class="btn btn-outline" onclick="window.app.downloadReport()">
+                <i data-lucide="file-text"></i> Download PDF
+              </button>
+              <button class="btn btn-ghost" onclick="window.print()">
+                <i data-lucide="printer"></i> Print Report
+              </button>
+            </div>
+          </div>
+
+          <!-- Hero Metrics Grid -->
+          <div class="results-hero-grid">
+            <div class="hero-metric-box">
+              <div class="hero-metric-label">Recommended Material</div>
+              <div id="res-material-name" class="hero-metric-value cyan">ABS Plastic</div>
+            </div>
+            <div class="hero-metric-box">
+              <div class="hero-metric-label">Recommended Process</div>
+              <div id="res-process-name" class="hero-metric-value">Injection Molding</div>
+            </div>
+            <div class="hero-metric-box">
+              <div class="hero-metric-label">Estimated Cost / Unit</div>
+              <div id="res-cost-range" class="hero-metric-value emerald">₹500 - ₹900</div>
+            </div>
+            <div class="hero-metric-box">
+              <div class="hero-metric-label">Manufacturing Efficiency</div>
+              <div id="res-efficiency" class="hero-metric-value">85%</div>
+            </div>
+            <div class="hero-metric-box">
+              <div class="hero-metric-label">Overall Design Score</div>
+              <div id="res-score-num" class="hero-metric-value cyan">8.5/10</div>
+            </div>
+        </div>
+
+        <!-- 2D Technical CAD Blueprint Visualizer Card -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 28px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="layout" class="icon-accent"></i> 2D TECHNICAL CAD BLUEPRINT DIAGRAM
+              </h3>
+              <p style="color: var(--text-muted); font-size: 0.85rem;">Orthographic projection drawing with dimension leaders and DFM callouts</p>
+            </div>
+            
+            <div style="display: flex; gap: 8px;" id="2d-view-toggle-btns">
+              <button class="btn btn-sm btn-outline active" onclick="window.app.set2DView('front')">Front View</button>
+              <button class="btn btn-sm btn-outline" onclick="window.app.set2DView('top')">Top View</button>
+              <button class="btn btn-sm btn-outline" onclick="window.app.set2DView('section')">Section Cut View</button>
+            </div>
+          </div>
+
+          <div class="viewer-2d-wrapper">
+            <div id="results-2d-canvas-container" class="viewer-2d-canvas-container"></div>
+          </div>
+        </div>
+
+
+        <!-- AI Performance Gauge Rings Grid -->
+        <h3 style="margin-bottom: 16px; font-size: 1.3rem;">AI PERFORMANCE SCORES</h3>
+        <div class="gauges-grid">
+          <div id="gauge-strength"></div>
+          <div id="gauge-cost"></div>
+          <div id="gauge-sustainability"></div>
+          <div id="gauge-manufacturability"></div>
+        </div>
+
+        <!-- Material & Manufacturing Recommendations Grid -->
+        <div class="rec-sections-grid">
+          
+          <!-- Material Recommendation -->
+          <div class="glass-card rec-card">
+            <h3><i data-lucide="flask-conical" class="icon-accent"></i> MATERIAL RECOMMENDATION</h3>
+            <div style="background: rgba(8, 13, 26, 0.6); padding: 14px 18px; border-radius: var(--radius-sm); margin-bottom: 16px;">
+              <span style="color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase;">Selected Material</span>
+              <div id="res-mat-selected" style="font-size: 1.2rem; font-weight: 700; color: var(--accent-cyan);">ABS Plastic</div>
+            </div>
+            <p id="res-mat-reason" style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 16px;"></p>
+
+            <h4 style="font-size: 0.95rem; color: var(--accent-emerald); margin-bottom: 8px;">Key Advantages:</h4>
+            <ul id="res-mat-advantages" class="bullets-list"></ul>
+
+            <h4 style="font-size: 0.95rem; color: var(--accent-amber); margin-top: 16px; margin-bottom: 8px;">Limitations & Trade-offs:</h4>
+            <ul id="res-mat-limitations" class="bullets-list"></ul>
+          </div>
+
+          <!-- Manufacturing Recommendation -->
+          <div class="glass-card rec-card">
+            <h3><i data-lucide="cog" class="icon-accent"></i> MANUFACTURING RECOMMENDATION</h3>
+            <div style="background: rgba(8, 13, 26, 0.6); padding: 14px 18px; border-radius: var(--radius-sm); margin-bottom: 16px;">
+              <span style="color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase;">Best Manufacturing Method</span>
+              <div id="res-mfg-best" style="font-size: 1.2rem; font-weight: 700; color: var(--accent-cyan);">Injection Molding</div>
+            </div>
+            <p id="res-mfg-explanation" style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 16px;"></p>
+
+            <h4 style="font-size: 0.95rem; color: var(--accent-cyan); margin-bottom: 8px;">Production Benefits:</h4>
+            <ul id="res-mfg-benefits" class="bullets-list"></ul>
+          </div>
+        </div>
+
+        <!-- Feature 7: Material Information Card -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 28px;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="info" class="icon-accent"></i> MATERIAL PROPERTY & RECYCLABILITY SPECIFICATIONS
+          </h3>
+          <div id="res-material-info-card" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; background: rgba(8, 13, 26, 0.6); padding: 18px; border-radius: var(--radius-sm);">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Feature 5: Dynamic Process-Specific Tips Card -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 28px; border-left: 4px solid var(--accent-cyan);">
+          <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="lightbulb" class="icon-accent"></i> PROCESS-SPECIFIC DFM MANUFACTURING TIPS
+          </h3>
+          <ul id="res-dynamic-tips-ul" class="bullets-list" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Rendered via JS -->
+          </ul>
+        </div>
+
+        <!-- Feature 6: Alternative Manufacturing Process Suggestions -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 28px;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="git-branch" class="icon-accent"></i> ALTERNATIVE MANUFACTURING METHOD SUGGESTIONS
+          </h3>
+          <div id="res-alternative-processes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px;">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+
+        <!-- COST ANALYSIS SECTION -->
+        <div class="glass-card" style="padding: 30px; margin-bottom: 30px;">
+          <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <i data-lucide="badge-indian-rupee" class="icon-accent"></i> COST ANALYSIS BREAKDOWN
+          </h3>
+
+          <table class="advisor-table">
+            <thead>
+              <tr>
+                <th>Cost Component</th>
+                <th>Cost per Unit (₹)</th>
+                <th>Share %</th>
+                <th>Optimization Advice</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Material Cost</td>
+                <td id="cost-mat-val">₹320</td>
+                <td>40%</td>
+                <td style="color: var(--text-muted);">High material yield; minimal runner sprue waste.</td>
+              </tr>
+              <tr>
+                <td>Manufacturing & Tooling Amortization</td>
+                <td id="cost-mfg-val">₹380</td>
+                <td>48%</td>
+                <td style="color: var(--text-muted);">Amortized over 5,000 units. Unit cost drops further at 10k+ volume.</td>
+              </tr>
+              <tr>
+                <td>Assembly & Inspection</td>
+                <td id="cost-asm-val">₹100</td>
+                <td>12%</td>
+                <td style="color: var(--text-muted);">Self-snapping alignment features reduce manual labor time.</td>
+              </tr>
+              <tr style="font-weight: bold; background: rgba(0, 242, 254, 0.08);">
+                <td>Total Estimated Cost / Unit</td>
+                <td id="cost-total-val" style="color: var(--accent-emerald); font-size: 1.1rem;">₹800</td>
+                <td>100%</td>
+                <td style="color: var(--accent-cyan);">Fits within Target Medium Budget Curve</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================== -->
+      <!-- 5. PRODUCT DESIGN VISUALIZATION PAGE (3D CAD Preview) -->
+      <!-- ====================================================================== -->
+      <section id="3d-preview-page" class="view-section hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div>
+            <h2 style="font-size: 1.6rem;">3D Product Design Visualization Page</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Interactive 3D WebGL Model Orbit & Structural CAD Preview</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <select id="select-3d-shading" class="form-control" style="width: auto;">
+              <option value="metallic">Shading: PBR Metallic</option>
+              <option value="plastic">Shading: Molded Plastic</option>
+              <option value="clay">Shading: CAD Clay</option>
+              <option value="heatmap">Shading: Thermal Stress Heatmap</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="viewer-3d-wrapper">
+          <div class="viewer-toolbar">
+            <button id="btn-3d-orbit" class="btn btn-ghost btn-sm" title="Toggle 360 Auto-Orbit">
+              <i data-lucide="rotate-cw"></i> 360° Orbit
+            </button>
+            <button id="btn-3d-wireframe" class="btn btn-ghost btn-sm" title="Toggle Wireframe">
+              <i data-lucide="grid"></i> Wireframe
+            </button>
+            <button id="btn-3d-explode" class="btn btn-ghost btn-sm" title="Toggle Explode Assembly View">
+              <i data-lucide="layers"></i> Explode View
+            </button>
+            <button id="btn-3d-reset" class="btn btn-ghost btn-sm" title="Reset View">
+              <i data-lucide="refresh-cw"></i> Reset View
+            </button>
+          </div>
+
+          <div id="main-3d-canvas-container"></div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="viewer-actions-row">
+          <button id="btn-gen-cad" class="btn btn-primary btn-lg">
+            <i data-lucide="zap"></i> Generate CAD Model (.STEP / .STL)
+          </button>
+          <button id="btn-gen-proto" class="btn btn-secondary btn-lg">
+            <i data-lucide="wrench"></i> Generate Rapid Prototype Quote
+          </button>
+          <button id="btn-download-report" class="btn btn-outline btn-lg" style="margin-left: auto;">
+            <i data-lucide="file-text"></i> Download Full Design Report
+          </button>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================== -->
+      <!-- 6. DESIGN HISTORY PAGE -->
+      <!-- ====================================================================== -->
+      <section id="history-page" class="view-section hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <h2 style="font-size: 1.6rem;">Previous Project Designs</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Archive of saved AI product recommendations and cost reports</p>
+          </div>
+          <button class="btn btn-primary" data-target-view="create-product-wizard">
+            <i data-lucide="plus"></i> New Design Project
+          </button>
+        </div>
+
+        <div id="history-cards-grid" class="projects-grid">
+          <!-- Rendered dynamically by JS -->
+        </div>
+      </section>
+
+
+      <!-- ====================================================================== -->
+      <!-- 7. MATERIAL ADVISOR STANDALONE PAGE -->
+      <!-- ====================================================================== -->
+      <section id="material-advisor-page" class="view-section hidden">
+        <div style="margin-bottom: 24px;">
+          <h2 style="font-size: 1.6rem;">Material Engineering Advisor</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Comprehensive engineering dataset for metals, polymers, and composites</p>
+        </div>
+
+        <div class="glass-card" style="padding: 24px;">
+          <table class="advisor-table">
+            <thead>
+              <tr>
+                <th>Material Name</th>
+                <th>Category</th>
+                <th>Tensile Strength</th>
+                <th>Density</th>
+                <th>Durability</th>
+                <th>Temp Max</th>
+                <th>Cost Index</th>
+              </tr>
+            </thead>
+            <tbody id="mat-advisor-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================== -->
+      <!-- 8. MANUFACTURING ADVISOR STANDALONE PAGE -->
+      <!-- ====================================================================== -->
+      <!-- ====================================================================== -->
+      <!-- 8. MANUFACTURING ADVISOR STANDALONE PAGE -->
+      <!-- ====================================================================== -->
+      <section id="manufacturing-advisor-page" class="view-section hidden">
+        
+        <!-- Sticky Section Control Bar with Search & Filters -->
+        <div class="mfg-sticky-header">
+          <div class="mfg-sticky-top-row">
+            <div>
+              <h2 style="font-size: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                <i data-lucide="cog" class="icon-accent"></i> Manufacturing Process Advisor & Decision Engine
+              </h2>
+              <p style="color: var(--text-muted); font-size: 0.88rem;">Multi-criteria DFM evaluation, batch cost scaling, suitability metrics, and process comparison</p>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-outline btn-sm" onclick="window.app.exportMfgReportPDF()">
+                <i data-lucide="file-text"></i> Download PDF
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="window.app.exportMfgCostCSV()">
+                <i data-lucide="download"></i> Export Cost Data
+              </button>
+            </div>
+          </div>
+
+          <!-- Feature 13: Search Box & Category Filter Pills -->
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div class="mfg-search-box">
+              <i data-lucide="search" style="color: var(--text-dim);"></i>
+              <input type="text" id="mfg-search-input" placeholder="Search by process name, material, accuracy, or application...">
+            </div>
+
+            <div class="mfg-filter-pills" id="mfg-filter-pills-container">
+              <button class="filter-pill active" data-filter="all">All Processes</button>
+              <button class="filter-pill" data-filter="Plastic">Plastic</button>
+              <button class="filter-pill" data-filter="Metal">Metal</button>
+              <button class="filter-pill" data-filter="Prototype">Prototype</button>
+              <button class="filter-pill" data-filter="High Volume">High Volume</button>
+              <button class="filter-pill" data-filter="High Precision">High Precision</button>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Feature 16: Quick Statistics Dashboard -->
+        <div class="stats-grid" id="mfg-stats-grid" style="margin-bottom: 24px;">
+          <!-- Dynamically populated or rendered -->
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Total Processes</span><i data-lucide="layers" class="icon-accent"></i></div>
+            <div class="stat-value" id="mfg-stat-total">6</div>
+            <div style="font-size: 0.78rem; color: var(--accent-cyan); margin-top: 6px;">Evaluated in Database</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Recommended Strategy</span><i data-lucide="check-circle-2" style="color: var(--accent-emerald);"></i></div>
+            <div class="stat-value" id="mfg-stat-rec" style="font-size: 1.3rem; color: var(--accent-emerald);">Injection Molding</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">Optimal ROI @ 5k units</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Est. Production Time</span><i data-lucide="clock" style="color: var(--accent-amber);"></i></div>
+            <div class="stat-value" id="mfg-stat-days">3-6 Weeks</div>
+            <div style="font-size: 0.78rem; color: var(--accent-amber); margin-top: 6px;">Includes mold tooling setup</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Manufacturing Efficiency</span><i data-lucide="zap" class="icon-accent"></i></div>
+            <div class="stat-value" id="mfg-stat-eff">96%</div>
+            <div style="font-size: 0.78rem; color: var(--accent-cyan); margin-top: 6px;">High yield & low scrap</div>
+          </div>
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>AI Confidence Score</span><i data-lucide="sparkles" style="color: #c084fc;"></i></div>
+            <div class="stat-value" id="mfg-stat-conf" style="color: #c084fc;">98%</div>
+            <div style="font-size: 0.78rem; color: #c084fc; margin-top: 6px;">DFM Multi-Criteria Match</div>
+          </div>
+        </div>
+
+
+        <!-- Feature 1: AI Recommendation Panel -->
+        <div class="mfg-hero-rec-card" id="mfg-ai-rec-banner">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <span class="rec-badge-tag"><i data-lucide="sparkles"></i> AI Optimal Recommended Process</span>
+              <h2 style="font-size: 1.8rem; margin-bottom: 6px;" id="rec-hero-title">Injection Molding</h2>
+              <p style="color: var(--text-muted); max-width: 680px;" id="rec-hero-reason">
+                Selected as the #1 manufacturing process based on high target volume (5,000 units), superior surface finish requirement (Ra 0.8 µm), and cost-effective unit pricing.
+              </p>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">AI Confidence</span>
+              <div style="font-size: 2.2rem; font-weight: 800; color: var(--accent-cyan);" id="rec-hero-confidence">96%</div>
+            </div>
+          </div>
+
+          <div class="rec-hero-grid">
+            <div class="rec-metric-item">
+              <label>Best Material</label>
+              <div class="val highlight" id="rec-hero-mat">ABS Plastic</div>
+            </div>
+            <div class="rec-metric-item">
+              <label>Est. Cost per Unit</label>
+              <div class="val" style="color: var(--accent-emerald);" id="rec-hero-cost">₹500 - ₹900</div>
+            </div>
+            <div class="rec-metric-item">
+              <label>Est. Production Time</label>
+              <div class="val" id="rec-hero-lead">3 - 6 Weeks</div>
+            </div>
+            <div class="rec-metric-item">
+              <label>Recommended Volume</label>
+              <div class="val" id="rec-hero-vol">5,000+ Units</div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Feature 2: Production Summary Dashboard -->
+        <h3 style="margin-bottom: 16px; font-size: 1.25rem;">PRODUCTION SUMMARY DASHBOARD</h3>
+        <div class="mfg-summary-grid">
+          <div class="glass-card summary-card">
+            <div class="summary-card-icon"><i data-lucide="flask-conical"></i></div>
+            <div>
+              <span style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase;">Material Selected</span>
+              <div style="font-size: 1.15rem; font-weight: 700; color: var(--text-main);" id="sum-mat-val">ABS Plastic (High Impact)</div>
+            </div>
+          </div>
+
+          <div class="glass-card summary-card">
+            <div class="summary-card-icon"><i data-lucide="layers"></i></div>
+            <div>
+              <span style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase;">Production Quantity</span>
+              <div style="font-size: 1.15rem; font-weight: 700; color: var(--accent-cyan);" id="sum-qty-val">5,000 Units</div>
+            </div>
+          </div>
+
+          <div class="glass-card summary-card">
+            <div class="summary-card-icon"><i data-lucide="badge-indian-rupee"></i></div>
+            <div>
+              <span style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase;">Est. Manufacturing Cost</span>
+              <div style="font-size: 1.15rem; font-weight: 700; color: var(--accent-emerald);" id="sum-cost-val">₹800 / unit</div>
+            </div>
+          </div>
+
+          <div class="glass-card summary-card">
+            <div class="summary-card-icon"><i data-lucide="clock"></i></div>
+            <div>
+              <span style="font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase;">Est. Production Time</span>
+              <div style="font-size: 1.15rem; font-weight: 700; color: var(--accent-amber);" id="sum-time-val">21 Days</div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Feature 11 & Feature 4: Manufacturing Score & Suitability Section -->
+        <div class="mfg-score-suitability-grid">
+          
+          <!-- Feature 11: Manufacturing Score -->
+          <div class="glass-card score-circle-wrapper">
+            <h3 style="font-size: 1.1rem; margin-bottom: 16px;">MANUFACTURING SCORE</h3>
+            
+            <div class="score-circle-svg-container">
+              <svg width="140" height="140" viewBox="0 0 140 140">
+                <circle cx="70" cy="70" r="58" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12"></circle>
+                <circle cx="70" cy="70" r="58" fill="none" stroke="url(#scoreGrad)" stroke-width="12" stroke-dasharray="364" stroke-dashoffset="36" stroke-linecap="round"></circle>
+                <defs>
+                  <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00f2fe" />
+                    <stop offset="100%" stop-color="#10b981" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="score-circle-center-text">
+                <div class="num" id="score-circle-val">94%</div>
+                <div class="lbl">Match Score</div>
+              </div>
+            </div>
+
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; background: rgba(8, 13, 26, 0.6); padding: 12px; border-radius: var(--radius-sm);">
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-muted);">AI Confidence:</span>
+                <strong style="color: var(--accent-cyan);">98%</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-muted);">Production Readiness:</span>
+                <strong style="color: var(--accent-emerald);">High / Optimized</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature 4: Manufacturing Suitability Progress Bars -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between;">
+              <span>PROCESS SUITABILITY INDEX</span>
+              <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">Ranked by AI Multi-Criteria Model</span>
+            </h3>
+
+            <div id="mfg-suitability-bars-container">
+              <!-- Rendered dynamically by JS -->
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Feature 3 & Feature 9: Cost Breakdown & Quality Prediction Grid -->
+        <div class="mfg-two-col-grid">
+          
+          <!-- Feature 3: Cost Breakdown with Progress Bars -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="pie-chart" class="icon-accent"></i> COST BREAKDOWN & AMORTIZATION
+            </h3>
+
+            <div id="mfg-cost-breakdown-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Feature 9: Quality Prediction Circular Meters -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="shield-check" class="icon-accent"></i> QUALITY PREDICTION METRICS
+            </h3>
+
+            <div class="quality-meters-grid" id="mfg-quality-meters-grid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Feature 5: Material Compatibility Cards -->
+        <div style="margin-bottom: 28px;">
+          <h3 style="font-size: 1.25rem; margin-bottom: 16px;">MATERIAL COMPATIBILITY RATINGS</h3>
+          <div class="material-compat-cards-grid" id="mfg-material-compat-grid">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+
+        <!-- Feature 6 & Feature 7: AI Manufacturing Tips & Advantages/Limitations -->
+        <div class="mfg-two-col-grid">
+          
+          <!-- Feature 6: Manufacturing Tips (AI Suggestions) -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 16px; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="lightbulb" class="icon-accent"></i> AI DFM SUGGESTIONS & TIPS
+            </h3>
+            <ul id="mfg-ai-tips-ul" class="bullets-list" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Rendered via JS -->
+            </ul>
+          </div>
+
+          <!-- Feature 7: Advantages and Limitations -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 16px;">ADVANTAGES vs LIMITATIONS</h3>
+            
+            <div style="margin-bottom: 16px;">
+              <h4 style="font-size: 0.92rem; color: var(--accent-emerald); margin-bottom: 8px;">Key Production Advantages:</h4>
+              <ul id="mfg-advantages-ul" class="bullets-list">
+                <!-- Rendered via JS -->
+              </ul>
+            </div>
+
+            <div>
+              <h4 style="font-size: 0.92rem; color: var(--accent-amber); margin-bottom: 8px;">Process Limitations:</h4>
+              <ul id="mfg-limitations-ul" class="bullets-list">
+                <!-- Rendered via JS -->
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Feature 8: Production Timeline -->
+        <div class="glass-card timeline-card">
+          <h3 style="font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+            <i data-lucide="git-commit" class="icon-accent"></i> END-TO-END PRODUCTION TIMELINE
+          </h3>
+          <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 4px;">Sequential execution roadmap from engineering design sign-off to final delivery</p>
+
+          <div class="horizontal-timeline-track" id="mfg-timeline-track">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+
+        <!-- Feature 10: Alternative Manufacturing Methods Chips -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 28px;">
+          <h3 style="font-size: 1.1rem; margin-bottom: 6px;">ALTERNATIVE MANUFACTURING METHODS</h3>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">Click any alternative method to inspect suitability specs</p>
+
+          <div class="chips-flex-wrap" id="mfg-alt-chips-container">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+
+        <!-- Feature 12 & 17: Process Comparison Table with Tooltips -->
+        <div class="glass-card" style="padding: 28px; margin-bottom: 28px; overflow-x: auto;">
+          <h3 style="font-size: 1.2rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+            <i data-lucide="table" class="icon-accent"></i> MANUFACTURING PROCESS COMPARISON MATRIX
+          </h3>
+
+          <table class="advisor-table">
+            <thead>
+              <tr>
+                <th>Process Name</th>
+                <th>Quantity Range</th>
+                <th>
+                  <span class="has-tooltip">
+                    Accuracy
+                    <span class="tooltip-content">Tolerance accuracy capability achievable under standard CNC/molding production conditions.</span>
+                  </span>
+                </th>
+                <th>
+                  <span class="has-tooltip">
+                    Lead Time
+                    <span class="tooltip-content">Total turnaround time from CAD file receipt to finished first article inspection delivery.</span>
+                  </span>
+                </th>
+                <th>
+                  <span class="has-tooltip">
+                    Tooling Cost
+                    <span class="tooltip-content">Initial upfront non-recurring engineering (NRE) investment for mold steel or fixture die tooling.</span>
+                  </span>
+                </th>
+                <th>Surface Finish</th>
+                <th>Best Application</th>
+              </tr>
+            </thead>
+            <tbody id="mfg-comparison-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+
+
+        <!-- Feature 14 & Primary Process Cards Grid -->
+        <div style="margin-bottom: 24px;">
+          <h3 style="font-size: 1.3rem; margin-bottom: 16px;">PRIMARY MANUFACTURING PROCESS CARDS</h3>
+          <div id="mfg-advisor-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+
+        <!-- Feature 15: Download & Export Section -->
+        <div class="mfg-bottom-export-bar" id="mfg-download-bar">
+          <div>
+            <h3 style="font-size: 1.2rem; margin-bottom: 4px;">Ready to Export Manufacturing Report?</h3>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">Download complete DFM engineering audit, cost breakdown, and process selection datasheet.</p>
+          </div>
+
+          <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+            <button class="btn btn-primary btn-lg" onclick="window.app.exportMfgReportPDF()">
+              <i data-lucide="file-text"></i> Download Report (PDF)
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="window.app.exportMfgCostCSV()">
+              <i data-lucide="download"></i> Export Cost Analysis (CSV)
+            </button>
+            <button class="btn btn-outline btn-lg" onclick="window.print()">
+              <i data-lucide="printer"></i> Print Report
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Expandable Process Details Modal Overlay -->
+      <div id="mfg-modal-overlay" class="mfg-modal-overlay">
+        <div class="mfg-modal-container">
+          <button class="mfg-modal-close" onclick="window.app.closeMfgModal()"><i data-lucide="x"></i></button>
+          <div id="mfg-modal-content">
+            <!-- Rendered dynamically by JS -->
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- ====================================================================== -->
+      <!-- 9. COST ANALYSIS STANDALONE PAGE -->
+      <!-- ====================================================================== -->
+      <section id="cost-analysis-page" class="view-section hidden">
+        <div style="margin-bottom: 24px;">
+          <h2 style="font-size: 1.6rem;">Cost Optimization & Breakdown Tool</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Analyze batch volume scaling and tooling amortization curves</p>
+        </div>
+
+        <div class="glass-card" style="padding: 30px;">
+          <h3 style="margin-bottom: 16px;">Unit Cost vs Batch Production Quantity</h3>
+          <p style="color: var(--text-muted); margin-bottom: 24px;">
+            As volume increases from 100 to 100,000 units, initial tooling setup costs amortize down exponentially.
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+            <div style="background: rgba(8, 13, 26, 0.7); padding: 20px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Batch: 100 units</span>
+              <div style="font-size: 1.4rem; font-weight: bold; color: var(--accent-amber); margin-top: 6px;">₹3,400 / unit</div>
+              <span style="font-size: 0.75rem; color: var(--text-dim);">High tooling share</span>
+            </div>
+
+            <div style="background: rgba(8, 13, 26, 0.7); padding: 20px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Batch: 1,000 units</span>
+              <div style="font-size: 1.4rem; font-weight: bold; color: var(--accent-cyan); margin-top: 6px;">₹1,200 / unit</div>
+              <span style="font-size: 0.75rem; color: var(--accent-cyan);">Balanced curve</span>
+            </div>
+
+            <div style="background: rgba(8, 13, 26, 0.7); padding: 20px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Batch: 5,000 units</span>
+              <div style="font-size: 1.4rem; font-weight: bold; color: var(--accent-emerald); margin-top: 6px;">₹800 / unit</div>
+              <span style="font-size: 0.75rem; color: var(--accent-emerald);">Optimal ROI</span>
+            </div>
+
+            <div style="background: rgba(8, 13, 26, 0.7); padding: 20px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+              <span style="color: var(--text-muted); font-size: 0.8rem;">Batch: 50,000 units</span>
+              <div style="font-size: 1.4rem; font-weight: bold; color: #c084fc; margin-top: 6px;">₹450 / unit</div>
+              <span style="font-size: 0.75rem; color: #c084fc;">Maximum Mass Volume</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ====================================================================== -->
+      <!-- 10. SETTINGS PAGE -->
+      <!-- ====================================================================== -->
+      <section id="settings-page" class="view-section hidden">
+        <div style="margin-bottom: 24px;">
+          <h2 style="font-size: 1.6rem;">Platform Settings & Preferences</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Manage engineering units, currency display, and AI recommendation rules</p>
+        </div>
+
+        <div class="glass-card" style="padding: 30px; max-width: 650px;">
+          <div class="form-group">
+            <label class="form-label">Default Dimension Units</label>
+            <select class="form-control">
+              <option value="mm" selected>Metric (mm, cm, grams, MPa)</option>
+              <option value="in">Imperial (inches, lbs, PSI)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Currency Display</label>
+            <select class="form-control">
+              <option value="INR" selected>Indian Rupee (₹)</option>
+              <option value="USD">US Dollar ($)</option>
+              <option value="EUR">Euro (€)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">AI DFM Safety Margin Coefficient</label>
+            <input type="range" class="form-control" min="1.0" max="2.5" step="0.1" value="1.5">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Current Factor: 1.5x (Aerospace & Medical Safety Grade)</div>
+          </div>
+
+          <button class="btn btn-primary" onclick="window.app.showToast('Settings saved successfully!', 'success')">
+            <i data-lucide="save"></i> Save Preferences
+          </button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Help & Terminology Modal Overlay -->
+  <div id="help-modal-overlay" class="mfg-modal-overlay">
+    <div class="mfg-modal-container" style="max-width: 620px;">
+      <button class="mfg-modal-close" onclick="window.app.closeHelpModal()"><i data-lucide="x"></i></button>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px;">
+        <div class="sidebar-logo-icon" style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); width: 42px; height: 42px;"><i data-lucide="help-circle" style="color: #040914;"></i></div>
+        <div>
+          <h2 style="font-size: 1.4rem;">Manufacturing Terminology Guide</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Key engineering concepts used by MethodWise AI Engine</p>
+        </div>
+      </div>
+      <div id="help-terms-container" style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Application Bundle -->
+  <script src="js/data.js"></script>
+  <script src="js/ai-engine.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/viewer3d.js"></script>
+  <script src="js/viewer2d.js"></script>
+  <script src="js/wizard.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
