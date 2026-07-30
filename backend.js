@@ -7,15 +7,28 @@
  */
 
 const http = require('http');
+const os = require('os');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+
+function getActiveWifiIp() {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const net of interfaces[name]) {
+      if (net.family === 'IPv4' && !net.internal && !name.toLowerCase().includes('vmnet')) {
+        return net.address;
+      }
+    }
+  }
+  return '192.168.1.8';
+}
 
 class MethodWiseBackend {
   constructor() {
     this.port = 8080;
     this.host = '0.0.0.0';
-    this.wifiIp = '192.168.1.7';
+    this.wifiIp = getActiveWifiIp();
     this.database = {
       projects: [
         {

@@ -1,6 +1,8 @@
 package ai.methodwise.app
 
 import android.os.Bundle
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -30,18 +32,30 @@ class MainActivity : AppCompatActivity() {
         settings.useWideViewPort = true
         settings.loadWithOverviewMode = true
         settings.mediaPlaybackRequiresUserGesture = false
+        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 return false
             }
+
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
+                // If network connection fails or IP changes, fall back instantly to local asset HTML
+                if (request?.isForMainFrame == true) {
+                    view?.loadUrl("file:///android_asset/mobile/index.html")
+                }
+            }
         }
     }
 
     private fun loadWebApp() {
-        // Loads the EXACT same live web application (index.html) running on your Wi-Fi (192.168.1.7)
-        val liveNetworkUrl = "http://192.168.1.7:8080/index.html"
-        webView.loadUrl(liveNetworkUrl)
+        // Loads bundled Mobile App asset HTML FIRST so app NEVER fails to open
+        val localAssetUrl = "file:///android_asset/mobile/index.html"
+        webView.loadUrl(localAssetUrl)
     }
 
     override fun onBackPressed() {

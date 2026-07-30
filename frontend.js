@@ -10,7 +10,7 @@ class MethodWiseFrontendApp {
   constructor() {
     this.appName = 'MethodWise AI';
     this.version = '1.0.0';
-    this.backendUrl = 'http://192.168.1.7:8080';
+    this.backendUrl = 'http://' + (window.location.hostname && window.location.hostname !== 'localhost' ? window.location.hostname : '192.168.1.8') + ':8080';
     this.activeView = 'dashboard-overview';
     this.activeProduct = {
       name: 'Smart Board',

@@ -7,7 +7,7 @@ class StorageSyncEngine {
   constructor() {
     this.listeners = new Set();
     this.broadcastChannel = null;
-    this.serverUrl = 'http://192.168.1.7:8080';
+    this.serverUrl = 'http://' + (window.location.hostname && window.location.hostname !== 'localhost' ? window.location.hostname : '192.168.1.8') + ':8080';
     this.init();
   }
 
@@ -30,8 +30,9 @@ class StorageSyncEngine {
       });
     });
 
-    // Initial sync fetch from Network API server if online
+    // Initial sync fetch from Network API server & automatic 2-second polling loop
     this.fetchProjectsFromNetwork();
+    setInterval(() => this.fetchProjectsFromNetwork(), 2000);
   }
 
   subscribe(callback) {
