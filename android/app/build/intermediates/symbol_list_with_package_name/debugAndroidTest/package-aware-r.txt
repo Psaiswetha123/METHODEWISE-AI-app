@@ -1,0 +1,3 @@
+ai.methodwise.app.test
+style WhiteBackgroundDialogTheme
+style WhiteBackgroundTheme

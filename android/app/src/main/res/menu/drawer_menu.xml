@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="@string/nav_home" />
+        <item
+            android:id="@+id/nav_wizard"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="@string/nav_create" />
+        <item
+            android:id="@+id/nav_advisors"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="@string/nav_materials" />
+        <item
+            android:id="@+id/nav_mfg_advisor"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="@string/nav_mfg" />
+        <item
+            android:id="@+id/nav_history_menu"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="@string/nav_history" />
+        <item
+            android:id="@+id/nav_settings_menu"
+            android:icon="@drawable/ic_launcher_foreground"
+            android:title="@string/nav_settings" />
+    </group>
+</menu>

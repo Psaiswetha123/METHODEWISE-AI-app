@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MethodWise AI</string>
+    <string name="app_subtitle">Smart Product Design &amp; Manufacturing Decision Advisor</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_create">Create</string>
+    <string name="nav_materials">Materials</string>
+    <string name="nav_mfg">Manufacturing</string>
+    <string name="nav_history">History</string>
+    <string name="nav_settings">Settings</string>
+</resources>

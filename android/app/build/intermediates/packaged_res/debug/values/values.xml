@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="accentEmerald">#10b981</color>
+    <color name="accentPurple">#7928ca</color>
+    <color name="bgDark">#080d1a</color>
+    <color name="cardBackground">#0f172a</color>
+    <color name="colorAccent">#4facfe</color>
+    <color name="colorPrimary">#00f2fe</color>
+    <color name="colorPrimaryDark">#080d1a</color>
+    <color name="textPrimary">#f8fafc</color>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <string name="app_name">MethodWise AI</string>
+    <string name="app_subtitle">Smart Product Design &amp; Manufacturing Decision Advisor</string>
+    <string name="nav_create">Create</string>
+    <string name="nav_history">History</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_materials">Materials</string>
+    <string name="nav_mfg">Manufacturing</string>
+    <string name="nav_settings">Settings</string>
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/bgDark</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+    </style>
+    <style name="AppTheme.NoActionBarLaunch" parent="AppTheme">
+        <item name="android:windowBackground">@color/bgDark</item>
+    </style>
+    <style name="Theme.MethodWiseAI" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorOnPrimary">@color/cardBackground</item>
+        
+        <item name="colorSecondary">@color/colorAccent</item>
+        <item name="colorSecondaryVariant">@color/accentPurple</item>
+        <item name="colorOnSecondary">@color/textPrimary</item>
+        
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+    </style>
+</resources>
