@@ -55,15 +55,26 @@ class StorageSyncEngine {
   }
 
   async fetchProjectsFromNetwork() {
-    try {
-      const res = await fetch(`${this.serverUrl}/api/projects`);
-      if (res.ok) {
-        const projects = await res.json();
-        localStorage.setItem('methodwise_projects', JSON.stringify(projects));
-        this.emit('PROJECTS_UPDATED', { projects });
+    const urlsToTry = [
+      this.serverUrl,
+      'http://127.0.0.1:8080',
+      'http://192.168.1.8:8080',
+      'http://localhost:8080'
+    ];
+
+    for (const url of urlsToTry) {
+      try {
+        const res = await fetch(`${url}/api/projects`, { signal: AbortSignal.timeout(1500) });
+        if (res.ok) {
+          const projects = await res.json();
+          localStorage.setItem('methodwise_projects', JSON.stringify(projects));
+          this.serverUrl = url; // Set active working connection URL
+          this.emit('PROJECTS_UPDATED', { projects });
+          break;
+        }
+      } catch (e) {
+        // Try next network/USB endpoint
       }
-    } catch (e) {
-      // Offline / local fallback
     }
   }
 
@@ -107,14 +118,18 @@ class StorageSyncEngine {
     localStorage.setItem('methodwise_projects', JSON.stringify(projects));
     this.emit('PROJECTS_UPDATED', { action: 'SAVE', project, projects });
 
-    // Push update to Network Server at 192.168.1.7:8080
-    try {
-      await fetch(`${this.serverUrl}/api/projects`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(project)
-      });
-    } catch (e) {}
+    // Push update to Network / USB Server at 8080
+    const urlsToTry = [this.serverUrl, 'http://127.0.0.1:8080', 'http://192.168.1.8:8080', 'http://localhost:8080'];
+    for (const url of urlsToTry) {
+      try {
+        await fetch(`${url}/api/projects`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(project)
+        });
+        break;
+      } catch (e) {}
+    }
 
     return projects;
   }
@@ -125,8 +140,14 @@ class StorageSyncEngine {
     localStorage.setItem('methodwise_projects', JSON.stringify(projects));
     this.emit('PROJECTS_UPDATED', { action: 'DELETE', projectId, projects });
 
-    // Sync delete with Network Server at 192.168.1.7:8080
-    try {
+    // Sync delete with Network / USB Server at 8080
+    const urlsToTry = [this.serverUrl, 'http://127.0.0.1:8080', 'http://192.168.1.8:8080', 'http://localhost:8080'];
+    for (const url of urlsToTry) {
+      try {
+        await fetch(`${url}/api/projects?id=${projectId}`, { method: 'DELETE' });
+        break;
+      } catch (e) {}
+    }
       await fetch(`${this.serverUrl}/api/projects?id=${projectId}`, { method: 'DELETE' });
     } catch (e) {}
 
