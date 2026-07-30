@@ -14,15 +14,15 @@ jobs:
 
     steps:
       - name: Checkout Repository Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js 18 Environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
 
       - name: Setup Python 3.10 Environment
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -76,10 +76,10 @@ jobs:
           python load-testing/generate_load_report.py
 
       # =========================================================================
-      # ARTIFACT UPLOAD: DOWNLOAD ALL EXCEL TEST REPORTS IN GITHUB ARTIFACTS
+      # ARTIFACT UPLOAD: DOWNLOAD ALL EXCEL TEST REPORTS IN GITHUB ARTIFACTS (v4)
       # =========================================================================
       - name: Upload All 4 Test Excel Summary Reports as GitHub Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: MethodWise-AI-All-4-Test-Excel-Reports
           path: |
