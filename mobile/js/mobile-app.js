@@ -15,29 +15,37 @@ class MethodWiseMobileApp {
   }
 
   init() {
-    this.ui = new window.MobileUIComponents(this);
-
-    // 1. Check Auth Session
-    const session = window.MethodWiseSync.getAuthSession();
-    this.isLoggedIn = session.isLoggedIn;
-
-    // 2. Subscribe to Sync Events
-    window.MethodWiseSync.subscribe((event) => this.handleSyncEvent(event));
-
-    // 3. Bind UI & Touch Listeners
-    this.bindEvents();
-
-    // 4. Hide Splash Screen after loading delay
-    setTimeout(() => {
+    const hideSplash = () => {
       const splash = document.getElementById('mobile-splash-screen');
-      if (splash) splash.classList.add('hidden');
-    }, 1000);
+      if (splash) {
+        splash.style.opacity = '0';
+        splash.style.pointerEvents = 'none';
+        setTimeout(() => splash.classList.add('hidden'), 200);
+      }
+    };
 
-    // 5. Initial View Render
-    if (!this.isLoggedIn) {
-      this.switchTab('login');
-    } else {
+    try {
+      this.ui = new window.MobileUIComponents(this);
+
+      // 1. Check Auth Session
+      if (window.MethodWiseSync) {
+        const session = window.MethodWiseSync.getAuthSession();
+        this.isLoggedIn = session ? session.isLoggedIn : true;
+        window.MethodWiseSync.subscribe((event) => this.handleSyncEvent(event));
+      } else {
+        this.isLoggedIn = true;
+      }
+
+      // 2. Bind UI & Touch Listeners
+      this.bindEvents();
+
+      // 3. Initial View Render
       this.switchTab('dashboard');
+    } catch (err) {
+      console.warn('Mobile init warning:', err);
+    } finally {
+      // Hide Splash Screen immediately guaranteed
+      setTimeout(hideSplash, 200);
     }
   }
 

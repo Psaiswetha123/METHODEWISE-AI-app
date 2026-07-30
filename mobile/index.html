@@ -160,7 +160,6 @@
   <!-- 5. Android Push Notification Banner -->
   <div class="mobile-push-banner" id="m-push-banner"></div>
 
-  <!-- Application Logic & Shared Engine Scripts -->
   <script src="../js/data.js"></script>
   <script src="../js/ai-engine.js"></script>
   <script src="../js/viewer2d.js"></script>
@@ -168,5 +167,17 @@
   <script src="../js/storage-sync.js"></script>
   <script src="js/mobile-ui-components.js"></script>
   <script src="js/mobile-app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        var splash = document.getElementById('mobile-splash-screen');
+        if (splash) {
+          splash.style.opacity = '0';
+          splash.style.pointerEvents = 'none';
+          setTimeout(function() { splash.classList.add('hidden'); }, 200);
+        }
+      }, 300);
+    });
+  </script>
 </body>
 </html>
