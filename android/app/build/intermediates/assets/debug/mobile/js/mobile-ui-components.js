@@ -21,12 +21,12 @@ class MobileUIComponents {
         <form id="m-login-form">
           <div class="mobile-form-group" style="text-align: left;">
             <label class="mobile-label">Work Email</label>
-            <input type="email" id="m-login-email" class="mobile-input" value="engineer@methodwise.ai" required>
+            <input type="email" id="m-login-email" class="mobile-input" placeholder="Enter your work email..." value="" required>
           </div>
 
           <div class="mobile-form-group" style="text-align: left;">
             <label class="mobile-label">Password</label>
-            <input type="password" id="m-login-password" class="mobile-input" value="demo12345" required>
+            <input type="password" id="m-login-password" class="mobile-input" placeholder="Enter your password..." value="" required>
           </div>
 
           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; margin-bottom: 20px; color: var(--text-muted);">

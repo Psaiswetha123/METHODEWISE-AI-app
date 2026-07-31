@@ -35,10 +35,18 @@ class MethodWiseApp {
     // 4. Bind global navigation and action listeners
     this.bindEvents();
 
-    // 5. Initialize icons
-    if (window.lucide) window.lucide.createIcons();
+    // 6. Restore user profile if session exists
+    if (window.MethodWiseSync) {
+      const session = window.MethodWiseSync.getAuthSession();
+      if (session && session.isLoggedIn && session.user && session.user.email) {
+        this.isLoggedIn = true;
+        this.updateUserProfile(session.user.email);
+        this.switchView('dashboard-overview');
+        return;
+      }
+    }
 
-    // 6. Ensure correct initial screen visibility
+    // 7. Ensure correct initial screen visibility
     this.switchView('login-screen');
   }
 
@@ -312,6 +320,34 @@ class MethodWiseApp {
 
 
 
+  updateUserProfile(email) {
+    if (!email) return;
+    const username = email.split('@')[0];
+    const parts = username.replace(/[._\-+]/g, ' ').trim().split(/\s+/);
+    const formattedName = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
+    
+    let avatarText = 'MW';
+    if (parts.length >= 2 && parts[0] && parts[1]) {
+      avatarText = (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    } else if (parts[0] && parts[0].length >= 2) {
+      avatarText = parts[0].substring(0, 2).toUpperCase();
+    } else if (parts[0]) {
+      avatarText = parts[0].charAt(0).toUpperCase();
+    }
+
+    const avatarElem = document.getElementById('topbar-user-avatar');
+    const nameElem = document.getElementById('topbar-user-name');
+    const roleElem = document.getElementById('topbar-user-role');
+
+    if (avatarElem) avatarElem.textContent = avatarText;
+    if (nameElem) nameElem.textContent = formattedName;
+    if (roleElem) roleElem.textContent = email;
+
+    if (window.MethodWiseSync) {
+      window.MethodWiseSync.saveAuthSession(true, { name: formattedName, email: email, avatar: avatarText });
+    }
+  }
+
   handleLogin() {
     const emailInput = document.getElementById('login-email');
     const passwordInput = document.getElementById('login-password');
@@ -324,9 +360,7 @@ class MethodWiseApp {
     }
 
     this.isLoggedIn = true;
-    if (window.MethodWiseSync) {
-      window.MethodWiseSync.saveAuthSession(true, { name: email.split('@')[0] || 'Engineering Lead', email: email });
-    }
+    this.updateUserProfile(email);
     this.showToast(`Login successful! Welcome ${email}`, 'success');
     this.switchView('dashboard-overview');
   }
