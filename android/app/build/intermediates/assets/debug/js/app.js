@@ -320,12 +320,16 @@ class MethodWiseApp {
 
 
 
-  updateUserProfile(email) {
+  updateUserProfile(email, customName = null, customRole = null) {
     if (!email) return;
-    const username = email.split('@')[0];
-    const parts = username.replace(/[._\-+]/g, ' ').trim().split(/\s+/);
-    const formattedName = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
-    
+    let formattedName = customName;
+    if (!formattedName) {
+      const username = email.split('@')[0];
+      const parts = username.replace(/[._\-+]/g, ' ').trim().split(/\s+/);
+      formattedName = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
+    }
+
+    const parts = formattedName.split(/\s+/);
     let avatarText = 'MW';
     if (parts.length >= 2 && parts[0] && parts[1]) {
       avatarText = (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
@@ -343,9 +347,57 @@ class MethodWiseApp {
     if (nameElem) nameElem.textContent = formattedName;
     if (roleElem) roleElem.textContent = email;
 
+    // Update Modal Form values as well
+    const modalAvatar = document.getElementById('modal-user-avatar');
+    const modalName = document.getElementById('modal-user-display-name');
+    const modalEmailSub = document.getElementById('modal-user-email-subtitle');
+    const inputName = document.getElementById('profile-input-name');
+    const inputEmail = document.getElementById('profile-input-email');
+    const inputRole = document.getElementById('profile-input-role');
+
+    if (modalAvatar) modalAvatar.textContent = avatarText;
+    if (modalName) modalName.textContent = formattedName;
+    if (modalEmailSub) modalEmailSub.textContent = email;
+    if (inputName) inputName.value = formattedName;
+    if (inputEmail) inputEmail.value = email;
+    if (inputRole && customRole) inputRole.value = customRole;
+
     if (window.MethodWiseSync) {
-      window.MethodWiseSync.saveAuthSession(true, { name: formattedName, email: email, avatar: avatarText });
+      window.MethodWiseSync.saveAuthSession(true, { name: formattedName, email: email, avatar: avatarText, role: customRole });
     }
+  }
+
+  openProfileModal() {
+    const modal = document.getElementById('profile-modal-overlay');
+    if (modal) {
+      modal.classList.add('active');
+      if (window.lucide) window.lucide.createIcons();
+    }
+  }
+
+  closeProfileModal() {
+    const modal = document.getElementById('profile-modal-overlay');
+    if (modal) modal.classList.remove('active');
+  }
+
+  saveProfileForm(e) {
+    if (e) e.preventDefault();
+    const nameInput = document.getElementById('profile-input-name');
+    const emailInput = document.getElementById('profile-input-email');
+    const roleInput = document.getElementById('profile-input-role');
+
+    const newName = nameInput ? nameInput.value.trim() : '';
+    const newEmail = emailInput ? emailInput.value.trim() : '';
+    const newRole = roleInput ? roleInput.value.trim() : '';
+
+    if (!newEmail) {
+      this.showToast('Work Email address is required', 'warning');
+      return;
+    }
+
+    this.updateUserProfile(newEmail, newName, newRole);
+    this.closeProfileModal();
+    this.showToast('Profile & account details updated successfully!', 'success');
   }
 
   handleLogin() {

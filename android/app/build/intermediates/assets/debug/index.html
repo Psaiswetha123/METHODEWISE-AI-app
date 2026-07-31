@@ -211,7 +211,7 @@
           </div>
         </div>
 
-        <div class="user-profile-badge" data-target-view="settings-page">
+        <div class="user-profile-badge" id="topbar-user-profile" onclick="window.app.openProfileModal()" title="View & Edit Profile Details" style="cursor: pointer;">
           <div class="avatar-circle" id="topbar-user-avatar">MW</div>
           <div>
             <div id="topbar-user-name" style="font-weight: 600; font-size: 0.9rem;">Engineering Lead</div>
@@ -1698,6 +1698,61 @@
       <div id="help-terms-container" style="display: flex; flex-direction: column; gap: 14px;">
         <!-- Populated dynamically via JS -->
       </div>
+    </div>
+  <!-- User Profile & Account Details Modal Overlay -->
+  <div id="profile-modal-overlay" class="mfg-modal-overlay">
+    <div class="mfg-modal-container" style="max-width: 650px;">
+      <button class="mfg-modal-close" onclick="window.app.closeProfileModal()"><i data-lucide="x"></i></button>
+      
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 18px;">
+        <div class="avatar-circle" id="modal-user-avatar" style="width: 56px; height: 56px; font-size: 1.4rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: #040914;">MW</div>
+        <div>
+          <h2 id="modal-user-display-name" style="font-size: 1.5rem; font-family: 'Outfit', sans-serif;">User Profile Details</h2>
+          <p id="modal-user-email-subtitle" style="color: var(--text-muted); font-size: 0.85rem;">engineer@methodwise.ai</p>
+          <span class="badge badge-emerald" style="margin-top: 4px;"><i data-lucide="shield-check" style="width: 12px;"></i> Verified Enterprise Account</span>
+        </div>
+      </div>
+
+      <form id="profile-edit-form" onsubmit="window.app.saveProfileForm(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="profile-input-name" class="form-control" value="Engineering Lead" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Work Email Address</label>
+            <input type="email" id="profile-input-email" class="form-control" value="engineer@methodwise.ai" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Job Title / Role</label>
+            <input type="text" id="profile-input-role" class="form-control" value="Lead CAD & DFM Engineer">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Department / Lab</label>
+            <input type="text" id="profile-input-dept" class="form-control" value="Product Design R&D Lab">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Contact Phone</label>
+            <input type="tel" id="profile-input-phone" class="form-control" value="+91 98765 43210">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Security License Tier</label>
+            <input type="text" class="form-control" value="Enterprise Pro Level 4" disabled style="opacity: 0.7;">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn btn-outline" onclick="window.app.closeProfileModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="save"></i> Save Profile Updates
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
