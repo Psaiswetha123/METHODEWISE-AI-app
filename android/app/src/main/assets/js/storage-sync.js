@@ -81,8 +81,8 @@ class StorageSyncEngine {
   // --- Auth Session Sync ---
   getAuthSession() {
     const session = localStorage.getItem('methodwise_auth_session');
-    if (!session) return { isLoggedIn: true, user: { name: 'Engineering Lead', email: 'engineer@methodwise.ai' } };
-    try { return JSON.parse(session); } catch (e) { return { isLoggedIn: true, user: { name: 'Engineering Lead', email: 'engineer@methodwise.ai' } }; }
+    if (!session) return { isLoggedIn: false, user: null };
+    try { return JSON.parse(session); } catch (e) { return { isLoggedIn: false, user: null }; }
   }
 
   saveAuthSession(isLoggedIn, user = null) {

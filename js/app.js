@@ -313,13 +313,33 @@ class MethodWiseApp {
 
 
   handleLogin() {
+    const emailInput = document.getElementById('login-email');
+    const passwordInput = document.getElementById('login-password');
+    const email = emailInput ? emailInput.value.trim() : '';
+    const password = passwordInput ? passwordInput.value.trim() : '';
+
+    if (!email || !password) {
+      this.showToast('Please enter your work email and password', 'warning');
+      return;
+    }
+
     this.isLoggedIn = true;
-    this.showToast('Login successful! Welcome to MethodWise AI', 'success');
+    if (window.MethodWiseSync) {
+      window.MethodWiseSync.saveAuthSession(true, { name: email.split('@')[0] || 'Engineering Lead', email: email });
+    }
+    this.showToast(`Login successful! Welcome ${email}`, 'success');
     this.switchView('dashboard-overview');
   }
 
   handleLogout() {
     this.isLoggedIn = false;
+    if (window.MethodWiseSync) {
+      window.MethodWiseSync.clearAuthSession();
+    }
+    const emailInput = document.getElementById('login-email');
+    const passwordInput = document.getElementById('login-password');
+    if (emailInput) emailInput.value = '';
+    if (passwordInput) passwordInput.value = '';
     this.switchView('login-screen');
     this.showToast('Logged out successfully', 'info');
   }

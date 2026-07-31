@@ -30,17 +30,21 @@ class MethodWiseMobileApp {
       // 1. Check Auth Session
       if (window.MethodWiseSync) {
         const session = window.MethodWiseSync.getAuthSession();
-        this.isLoggedIn = session ? session.isLoggedIn : true;
+        this.isLoggedIn = session ? session.isLoggedIn : false;
         window.MethodWiseSync.subscribe((event) => this.handleSyncEvent(event));
       } else {
-        this.isLoggedIn = true;
+        this.isLoggedIn = false;
       }
 
       // 2. Bind UI & Touch Listeners
       this.bindEvents();
 
       // 3. Initial View Render
-      this.switchTab('dashboard');
+      if (!this.isLoggedIn) {
+        this.switchTab('login');
+      } else {
+        this.switchTab('dashboard');
+      }
     } catch (err) {
       console.warn('Mobile init warning:', err);
     } finally {
