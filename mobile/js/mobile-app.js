@@ -142,10 +142,6 @@ class MethodWiseMobileApp {
   }
 
   switchTab(tabId, pushHistory = true) {
-    if (!this.isLoggedIn && tabId !== 'login') {
-      tabId = 'login';
-    }
-
     this.currentTab = tabId;
 
     if (pushHistory && (this.historyStack[this.historyStack.length - 1] !== tabId)) {

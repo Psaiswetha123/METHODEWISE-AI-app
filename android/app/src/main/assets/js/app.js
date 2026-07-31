@@ -431,11 +431,6 @@ class MethodWiseApp {
   }
 
   switchView(viewId) {
-    // Guard check if trying to access dashboard while logged out
-    if (!this.isLoggedIn && viewId !== 'login-screen') {
-      viewId = 'login-screen';
-    }
-
     this.currentView = viewId;
 
     // Toggle Login Screen vs App Shell
