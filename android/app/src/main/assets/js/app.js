@@ -1656,6 +1656,49 @@ window.setActiveProductName = function(name) {
   });
 };
 
+// Global Standalone Fallbacks for Floating Widgets & AI Chatbot
+window.toggleAiChat = function() {
+  if (window.app && typeof window.app.toggleAiChat === 'function') {
+    window.app.toggleAiChat();
+  } else {
+    const win = document.getElementById('ai-chat-window');
+    if (win) win.classList.toggle('hidden');
+  }
+};
+
+window.openAiChat = function() {
+  if (window.app && typeof window.app.openAiChat === 'function') {
+    window.app.openAiChat();
+  } else {
+    const win = document.getElementById('ai-chat-window');
+    if (win) win.classList.remove('hidden');
+  }
+};
+
+window.closeAiChat = function() {
+  if (window.app && typeof window.app.closeAiChat === 'function') {
+    window.app.closeAiChat();
+  } else {
+    const win = document.getElementById('ai-chat-window');
+    if (win) win.classList.add('hidden');
+  }
+};
+
+window.sendAiChatMessage = function(e) {
+  if (window.app && typeof window.app.sendAiChatMessage === 'function') {
+    window.app.sendAiChatMessage(e);
+  }
+};
+
+window.toggleFabMenu = function() {
+  if (window.app && typeof window.app.toggleFabMenu === 'function') {
+    window.app.toggleFabMenu();
+  } else {
+    const menu = document.getElementById('fab-menu');
+    if (menu) menu.classList.toggle('hidden');
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new MethodWiseApp();
   window.app.init();
