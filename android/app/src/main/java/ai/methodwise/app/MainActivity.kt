@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
                 request: WebResourceRequest?,
                 error: WebResourceError?
             ) {
-                // Fall back instantly to local asset index.html if network is offline
+                // If live host network URL fails or phone is offline, fall back to bundled asset index.html
                 if (request?.isForMainFrame == true) {
                     view?.loadUrl("file:///android_asset/index.html")
                 }
@@ -53,9 +53,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadWebApp() {
-        // Loads the EXACT SAME main web application (index.html) so Web and Mobile App are 100% IDENTICAL
-        val webAppAssetUrl = "file:///android_asset/index.html"
-        webView.loadUrl(webAppAssetUrl)
+        // Primary Target: http://172.20.10.13:8080/index.html (exact same web application)
+        val liveNetworkUrl = "http://172.20.10.13:8080/index.html"
+        webView.loadUrl(liveNetworkUrl)
     }
 
     override fun onBackPressed() {

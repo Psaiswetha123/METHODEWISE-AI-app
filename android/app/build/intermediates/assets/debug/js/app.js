@@ -516,6 +516,125 @@ class MethodWiseApp {
     }
   }
 
+  renderDashboardStats() {
+    this.renderDashboardGauges();
+    setTimeout(() => this.renderDashboardCharts(), 150);
+  }
+
+  renderDashboardGauges() {
+    if (!window.ChartRenderer) return;
+    window.ChartRenderer.renderCircularGauge('health-gauge-overall', 94, 'Overall Score', '#00f2fe');
+    window.ChartRenderer.renderCircularGauge('health-gauge-strength', 88, 'Strength', '#4facfe');
+    window.ChartRenderer.renderCircularGauge('health-gauge-weight', 92, 'Weight Eff.', '#3b82f6');
+    window.ChartRenderer.renderCircularGauge('health-gauge-cost', 96, 'Cost Eff.', '#10b981');
+    window.ChartRenderer.renderCircularGauge('health-gauge-durability', 90, 'Durability', '#7928ca');
+    window.ChartRenderer.renderCircularGauge('health-gauge-mfg', 95, 'Manufacturability', '#00f2fe');
+    window.ChartRenderer.renderCircularGauge('health-gauge-eco', 98, 'Sustainability', '#10b981');
+    window.ChartRenderer.renderCircularGauge('health-gauge-ai', 99, 'AI Confidence', '#f59e0b');
+  }
+
+  renderDashboardCharts() {
+    if (!window.ChartRenderer) return;
+    // Line Chart: Cost Trend
+    window.ChartRenderer.renderLineChart('chart-line-cost', ['1k', '2.5k', '5k', '10k', '25k'], [1450, 720, 480, 360, 290], '#00f2fe');
+    // Bar Chart: Lead Time
+    window.ChartRenderer.renderBarChart('chart-bar-time', ['Inj Mold', 'CNC', '3D Print', 'Casting', 'Sheet Metal'], [14, 5, 2, 21, 7]);
+    // Radar Chart: Multi-Criteria Evaluation
+    window.ChartRenderer.renderRadarChart('chart-radar-eval', ['Strength', 'Cost', 'Weight', 'Durability', 'Eco Score'], [88, 96, 92, 90, 98], '#00f2fe');
+    // Pie Chart: Material Usage
+    window.ChartRenderer.renderBarChart('chart-pie-material', ['ABS', 'PC', 'Nylon', 'Alu 6061', 'Steel 316L'], [45, 25, 15, 10, 5], ['#00f2fe', '#4facfe', '#7928ca', '#f59e0b', '#10b981']);
+  }
+
+  // --- Floating AI Assistant & FAB Quick Actions ---
+  toggleAiChat() {
+    const win = document.getElementById('ai-chat-window');
+    if (win) {
+      win.classList.toggle('hidden');
+      if (!win.classList.contains('hidden')) {
+        const input = document.getElementById('ai-chat-input');
+        if (input) input.focus();
+      }
+    }
+  }
+
+  openAiChat() {
+    const win = document.getElementById('ai-chat-window');
+    if (win) win.classList.remove('hidden');
+  }
+
+  closeAiChat() {
+    const win = document.getElementById('ai-chat-window');
+    if (win) win.classList.add('hidden');
+  }
+
+  sendAiChatMessage(e) {
+    if (e) e.preventDefault();
+    const input = document.getElementById('ai-chat-input');
+    const container = document.getElementById('ai-chat-messages');
+    if (!input || !container) return;
+
+    const query = input.value.trim();
+    if (!query) return;
+
+    // Append User Message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'chat-bubble user';
+    userMsg.textContent = query;
+    container.appendChild(userMsg);
+    input.value = '';
+    container.scrollTop = container.scrollHeight;
+
+    // Generate AI Engineering Response
+    setTimeout(() => {
+      let replyText = `For optimal manufacturing efficiency and cost control, MethodWise AI recommends evaluating ABS Plastic or Aluminum 6061 with standard Injection Molding or CNC Machining tolerances.`;
+      
+      const q = query.toLowerCase();
+      if (q.includes('material') || q.includes('abs') || q.includes('metal')) {
+        replyText = `ABS Plastic offers high impact strength (45 MPa) at ₹140/kg with 100% recyclability. For heavy structural applications, Aluminum 6061-T6 (310 MPa) is recommended.`;
+      } else if (q.includes('cost') || q.includes('price') || q.includes('budget')) {
+        replyText = `Unit production cost drops from ₹1,450 at 1,000 units to ₹480 at 5,000 volume due to NRE mold amortization. Material cost accounts for 38% of total unit cost.`;
+      } else if (q.includes('dfm') || q.includes('rule') || q.includes('draft')) {
+        replyText = `Ensure a minimum 1.5° draft angle on vertical mold walls to prevent component drag marks during ejector pin stroke. Uniform wall thickness should be maintained at 2.5mm.`;
+      } else if (q.includes('report') || q.includes('export') || q.includes('pdf')) {
+        replyText = `You can export complete PDF reports, CSV datasheets, and Word executive summaries anytime using the Multi-Format Exporter!`;
+      }
+
+      const botMsg = document.createElement('div');
+      botMsg.className = 'chat-bubble bot';
+      botMsg.textContent = replyText;
+      container.appendChild(botMsg);
+      container.scrollTop = container.scrollHeight;
+    }, 600);
+  }
+
+  toggleFabMenu() {
+    const menu = document.getElementById('fab-menu');
+    if (menu) menu.classList.toggle('hidden');
+  }
+
+  exportExcel() {
+    const csvContent = "data:text/csv;charset=utf-8,Parameter,Value,Unit\nProduct Name,Smart Helmet,Units\nMaterial,ABS Plastic,Thermoplastic\nProcess,Injection Molding,Molding\nUnit Cost,480,INR\nDFM Score,9.4,Out of 10\nReadiness,96.8,Percent\n";
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "MethodWise_AI_DFM_Report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.showToast('Exported CSV Datasheet successfully!', 'success');
+  }
+
+  exportWord() {
+    const blob = new Blob(["MethodWise AI Engineering Executive Summary\n======================================\nProduct Name: Smart Helmet\nRecommended Material: ABS Plastic\nRecommended Process: Injection Molding\nUnit Cost: ₹480 / unit\nDFM Manufacturability Score: 9.4/10\nSustainability Rating: Grade A+ Eco\n"], { type: "application/msword" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "MethodWise_AI_Executive_Summary.doc";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.showToast('Exported Word Document summary successfully!', 'success');
+  }
+
   update2DFromControls() {
     const l = parseFloat(document.getElementById('2d-dim-l')?.value) || 280;
     const w = parseFloat(document.getElementById('2d-dim-w')?.value) || 220;

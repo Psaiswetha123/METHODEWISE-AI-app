@@ -226,128 +226,446 @@
     <main class="app-main">
 
       <!-- ====================================================================== -->
-      <!-- VIEW: DASHBOARD OVERVIEW -->
+      <!-- VIEW: DASHBOARD OVERVIEW (ENTERPRISE INDUSTRIAL GRADE) -->
       <!-- ====================================================================== -->
       <section id="dashboard-overview" class="view-section active">
-        <!-- Hero CTA Banner -->
-        <div class="dash-hero-banner">
+        
+        <!-- 1. Personalized Dynamic Welcome Section -->
+        <div class="glass-card" style="padding: 24px 30px; margin-bottom: 24px; background: linear-gradient(135deg, rgba(0, 242, 254, 0.12), rgba(121, 40, 202, 0.12)); border: 1px solid var(--border-glow); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
           <div>
-            <span class="badge badge-cyan" style="margin-bottom: 12px;">MethodWise AI Advisor v2.4</span>
-            <h1 class="dash-hero-title">Smart Product Design & Manufacturing Decision Advisor</h1>
-            <p style="color: var(--text-muted); max-width: 620px;">
-              Accelerate engineering decisions. Optimize material selection, DFM manufacturability, and unit cost curves using multi-criteria AI algorithms.
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+              <span class="badge badge-cyan" style="font-size: 0.8rem;"><i data-lucide="sparkles" style="width: 12px;"></i> MethodWise AI Engine v2.4 Active</span>
+              <span class="badge badge-emerald" style="font-size: 0.8rem;"><i data-lucide="wifi" style="width: 12px;"></i> Server Online</span>
+            </div>
+            <h1 class="dash-hero-title" style="font-size: 1.8rem; margin-bottom: 6px;">Good Evening, <span id="welcome-user-name" style="color: var(--accent-cyan);">Sai Swetha</span></h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+              You currently have: <strong style="color: var(--text-main);">4 Active Projects</strong> • <strong style="color: var(--accent-emerald);">2 AI Recommendations Ready</strong> • <strong style="color: var(--accent-amber);">1 Report Pending</strong> • Next Review Tomorrow
             </p>
           </div>
-          <button class="btn btn-primary btn-lg" data-target-view="create-product-wizard">
-            <i data-lucide="sparkles"></i> Start New Product Design Wizard
-          </button>
-        </div>
-
-        <!-- Quick Stats Cards Grid (4 Cards with animated counters) -->
-        <div class="stats-grid">
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>Total Products Designed</span>
-              <i data-lucide="box" class="icon-accent"></i>
-            </div>
-            <div id="dash-stat-active" class="stat-value">12</div>
-            <div style="font-size: 0.78rem; color: var(--accent-emerald); margin-top: 6px;">+4 created this month</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>Analyses Completed</span>
-              <i data-lucide="activity" style="color: var(--accent-emerald);"></i>
-            </div>
-            <div id="dash-stat-analyses" class="stat-value">48</div>
-            <div style="font-size: 0.78rem; color: var(--accent-cyan); margin-top: 6px;">100% DFM pass rate</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>Saved Reports</span>
-              <i data-lucide="file-check-2" style="color: var(--accent-amber);"></i>
-            </div>
-            <div id="dash-stat-saved" class="stat-value">18</div>
-            <div style="font-size: 0.78rem; color: var(--accent-amber); margin-top: 6px;">Exportable in PDF & CSV</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>AI Recommendation Accuracy</span>
-              <i data-lucide="target" style="color: var(--accent-violet);"></i>
-            </div>
-            <div id="dash-stat-accuracy" class="stat-value">99.4%</div>
-            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">Based on 12k+ DFM simulations</div>
+          <div style="display: flex; gap: 12px;">
+            <button class="btn btn-primary btn-md" data-target-view="create-product-wizard">
+              <i data-lucide="plus-circle"></i> Create New Product
+            </button>
+            <button class="btn btn-outline btn-md" onclick="window.app.openAiChat()">
+              <i data-lucide="bot"></i> Ask AI Assistant
+            </button>
           </div>
         </div>
 
-        <!-- Dashboard Widgets Grid -->
-        <div class="dash-widgets-grid">
-          
-          <!-- AI Recommendation Summary Cards -->
-          <div style="display: flex; flex-direction: column; gap: 24px;">
-            <!-- AI Insights Panel -->
-            <div class="glass-card" style="padding: 24px;">
-              <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 1.1rem; color: var(--accent-cyan);">
-                <i data-lucide="sparkles"></i> AI Insights & Optimization Panel
-              </h3>
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; font-size: 0.88rem;">
-                <div style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid var(--accent-emerald); padding: 10px 14px; border-radius: var(--radius-sm); color: var(--text-main);">
-                  ✔ Best manufacturing process automatically selected.
-                </div>
-                <div style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid var(--accent-emerald); padding: 10px 14px; border-radius: var(--radius-sm); color: var(--text-main);">
-                  ✔ Selected material is suitable for high-volume production.
-                </div>
-                <div style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid var(--accent-emerald); padding: 10px 14px; border-radius: var(--radius-sm); color: var(--text-main);">
-                  ✔ Estimated production cost is within target budget margin.
-                </div>
-                <div style="background: rgba(16, 185, 129, 0.08); border-left: 3px solid var(--accent-emerald); padding: 10px 14px; border-radius: var(--radius-sm); color: var(--text-main);">
-                  ✔ Estimated completion time is acceptable (< 3 weeks).
-                </div>
+        <!-- 2. Expanded 12-Card KPI Grid with Animated Counter Values -->
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Total Products Designed</span><i data-lucide="box" class="icon-accent"></i></div>
+            <div id="kpi-total-products" class="stat-value">12</div>
+            <div style="font-size: 0.78rem; color: var(--accent-emerald); margin-top: 4px;">+4 created this month</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Active Projects</span><i data-lucide="folder-kanban" style="color: var(--accent-cyan);"></i></div>
+            <div id="kpi-active-projects" class="stat-value">4</div>
+            <div style="font-size: 0.78rem; color: var(--accent-cyan); margin-top: 4px;">2 in optimization phase</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>AI Analyses Completed</span><i data-lucide="activity" style="color: var(--accent-emerald);"></i></div>
+            <div id="kpi-ai-analyses" class="stat-value">48</div>
+            <div style="font-size: 0.78rem; color: var(--accent-emerald); margin-top: 4px;">100% DFM pass rate</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Manufacturing Readiness</span><i data-lucide="shield-check" style="color: var(--accent-blue);"></i></div>
+            <div id="kpi-mfg-readiness" class="stat-value">96.8%</div>
+            <div style="font-size: 0.78rem; color: var(--accent-blue); margin-top: 4px;">Grade A+ Production Ready</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>AI Confidence Score</span><i data-lucide="target" style="color: var(--accent-violet);"></i></div>
+            <div id="kpi-ai-confidence" class="stat-value">99.4%</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">12k+ DFM simulations</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Estimated Cost Savings</span><i data-lucide="indian-rupee" style="color: var(--accent-emerald);"></i></div>
+            <div id="kpi-cost-savings" class="stat-value">₹1,40,000</div>
+            <div style="font-size: 0.78rem; color: var(--accent-emerald); margin-top: 4px;">28% batch cost reduction</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Production Time Saved</span><i data-lucide="clock" style="color: var(--accent-amber);"></i></div>
+            <div id="kpi-time-saved" class="stat-value">14 Days</div>
+            <div style="font-size: 0.78rem; color: var(--accent-amber); margin-top: 4px;">Automated tooling cycles</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Carbon Footprint</span><i data-lucide="leaf" style="color: #10b981;"></i></div>
+            <div id="kpi-carbon-footprint" class="stat-value">-32% CO2e</div>
+            <div style="font-size: 0.78rem; color: #10b981; margin-top: 4px;">Eco-optimized materials</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Material Efficiency</span><i data-lucide="pie-chart" style="color: var(--accent-cyan);"></i></div>
+            <div id="kpi-material-efficiency" class="stat-value">94.2%</div>
+            <div style="font-size: 0.78rem; color: var(--accent-cyan); margin-top: 4px;">Minimal scrap waste</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Design Success Rate</span><i data-lucide="trophy" style="color: var(--accent-amber);"></i></div>
+            <div id="kpi-success-rate" class="stat-value">98.5%</div>
+            <div style="font-size: 0.78rem; color: var(--accent-amber); margin-top: 4px;">Zero physical prototypes failed</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Reports Generated</span><i data-lucide="file-check-2" style="color: var(--accent-rose);"></i></div>
+            <div id="kpi-reports-generated" class="stat-value">18</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">PDF, Excel & Word exportable</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header"><span>Avg Unit Manufacturing Cost</span><i data-lucide="coins" style="color: var(--accent-purple);"></i></div>
+            <div id="kpi-avg-cost" class="stat-value">₹480 / unit</div>
+            <div style="font-size: 0.78rem; color: var(--accent-purple); margin-top: 4px;">At 5,000 production volume</div>
+          </div>
+        </div>
+
+        <!-- 3. AI Decision Workflow Timeline & AI Insight Panel -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+          <!-- AI Decision Workflow Timeline -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: var(--accent-cyan); margin-bottom: 18px;">
+              <i data-lucide="git-commit"></i> AI Decision Workflow Timeline
+            </h3>
+            <div class="vertical-timeline">
+              <div class="timeline-step-item">
+                <div class="timeline-step-dot completed"><i data-lucide="check" style="width: 12px;"></i></div>
+                <strong style="font-size: 0.9rem; color: var(--text-main);">1. Requirements Received</strong>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Consumer Electronics • High Structural Rigidity • Ambient Environment</span>
+              </div>
+              <div class="timeline-step-item">
+                <div class="timeline-step-dot completed"><i data-lucide="check" style="width: 12px;"></i></div>
+                <strong style="font-size: 0.9rem; color: var(--text-main);">2. Material Analysis</strong>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Evaluated ABS, Polycarbonate, Nylon & Aluminum 6061</span>
+              </div>
+              <div class="timeline-step-item">
+                <div class="timeline-step-dot completed"><i data-lucide="check" style="width: 12px;"></i></div>
+                <strong style="font-size: 0.9rem; color: var(--text-main);">3. Manufacturing Analysis</strong>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Compared Injection Molding vs CNC Machining vs 3D Printing</span>
+              </div>
+              <div class="timeline-step-item">
+                <div class="timeline-step-dot completed"><i data-lucide="check" style="width: 12px;"></i></div>
+                <strong style="font-size: 0.9rem; color: var(--text-main);">4. Cost Prediction</strong>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Calculated ₹2,50,000 NRE Tooling vs ₹480/unit production cost</span>
+              </div>
+              <div class="timeline-step-item">
+                <div class="timeline-step-dot completed"><i data-lucide="check" style="width: 12px;"></i></div>
+                <strong style="font-size: 0.9rem; color: var(--text-main);">5. DFM Validation</strong>
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Draft angle 1.5° & uniform wall thickness 2.5mm validated</span>
+              </div>
+              <div class="timeline-step-item">
+                <div class="timeline-step-dot completed"><i data-lucide="check" style="width: 12px;"></i></div>
+                <strong style="font-size: 0.9rem; color: var(--text-main);">6. Optimization & Final Recommendation</strong>
+                <span style="font-size: 0.78rem; color: var(--accent-emerald); font-weight: 600;">Injection Molding + ABS Plastic Selected (Score 9.4/10)</span>
               </div>
             </div>
+          </div>
 
-            <!-- Featured AI Material Recommendation & Favorite Materials Grid -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-              <div class="glass-card" style="padding: 20px;">
-                <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 1.05rem;">
-                  <i data-lucide="flask-conical" class="icon-accent"></i> Featured Material Recommendation
-                </h3>
-                <div style="background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.3); border-radius: var(--radius-md); padding: 14px; text-align: center;">
-                  <span class="badge badge-cyan">Top DFM Choice</span>
-                  <h4 style="font-size: 1.15rem; margin-top: 6px;">ABS Plastic</h4>
-                  <p style="font-size: 0.8rem; color: var(--accent-emerald); margin-top: 4px;">₹120 - ₹180 / kg | 45 MPa Strength</p>
-                </div>
+          <!-- AI Premium Insight Cards Panel -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: var(--accent-emerald); margin-bottom: 18px;">
+              <i data-lucide="sparkles"></i> AI Premium Decision Insights
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-emerald); padding: 12px 16px; border-radius: var(--radius-sm);">
+                <div style="font-weight: 600; color: var(--accent-emerald); font-size: 0.9rem;">✔ Manufacturing Process Automatically Selected</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Injection molding provides optimal unit cost efficiency at 5,000 volume.</div>
               </div>
 
-              <!-- Feature 7: Favorite Materials Card -->
-              <div class="glass-card" style="padding: 20px;">
-                <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 1.05rem; color: var(--accent-rose);">
-                  <i data-lucide="heart"></i> Favorite Materials
-                </h3>
-                <div id="dash-favorite-materials" style="display: flex; flex-direction: column; gap: 8px;">
-                  <!-- Populated by JS -->
-                </div>
+              <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-emerald); padding: 12px 16px; border-radius: var(--radius-sm);">
+                <div style="font-weight: 600; color: var(--accent-emerald); font-size: 0.9rem;">✔ Material High-Volume Suitability Verified</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">ABS Plastic offers superior melt flow index and rapid mold cooling cycles.</div>
+              </div>
+
+              <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-emerald); padding: 12px 16px; border-radius: var(--radius-sm);">
+                <div style="font-weight: 600; color: var(--accent-emerald); font-size: 0.9rem;">✔ Estimated Cost Within Target Budget Margin</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Unit cost ₹480 yields a 36% profit margin against ₹750 target selling price.</div>
+              </div>
+
+              <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-emerald); padding: 12px 16px; border-radius: var(--radius-sm);">
+                <div style="font-weight: 600; color: var(--accent-emerald); font-size: 0.9rem;">✔ Product Strength Exceeds Minimum Safety Margin</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">45 MPa tensile yield strength delivers 1.5x safety factor.</div>
+              </div>
+
+              <div style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-emerald); padding: 12px 16px; border-radius: var(--radius-sm);">
+                <div style="font-weight: 600; color: var(--accent-emerald); font-size: 0.9rem;">✔ Sustainability & Recyclability Score Excellent</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">100% recyclable thermoplastic polymer with low energy footprint.</div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <!-- Engineering Download Center Card -->
-            <div class="glass-card" style="padding: 20px;">
-              <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 1.05rem;">
-                <i data-lucide="download-cloud" class="icon-accent"></i> Engineering Download Center
-              </h3>
-              <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                <button class="btn btn-primary btn-sm" onclick="window.app.downloadReport()">
-                  <i data-lucide="file-text"></i> Download PDF Report
-                </button>
-                <button class="btn btn-outline btn-sm" onclick="window.app.exportExcel()">
-                  <i data-lucide="sheet"></i> Export Excel (.CSV)
-                </button>
-                <button class="btn btn-ghost btn-sm" onclick="window.print()">
-                  <i data-lucide="printer"></i> Print Summary
-                </button>
+        <!-- 4. Product Health Score Circular Progress Indicators -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 24px;">
+          <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: var(--accent-cyan); margin-bottom: 18px;">
+            <i data-lucide="gauge"></i> Product Health & Multi-Metric Evaluation Dashboard
+          </h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 16px; text-align: center;">
+            <div id="health-gauge-overall"></div>
+            <div id="health-gauge-strength"></div>
+            <div id="health-gauge-weight"></div>
+            <div id="health-gauge-cost"></div>
+            <div id="health-gauge-durability"></div>
+            <div id="health-gauge-mfg"></div>
+            <div id="health-gauge-eco"></div>
+            <div id="health-gauge-ai"></div>
+          </div>
+        </div>
+
+        <!-- 5. Smart Analytics Interactive Multi-Chart Suite -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+          <div class="glass-card" style="padding: 20px;">
+            <h4 style="font-size: 1rem; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="bar-chart-3" style="color: var(--accent-cyan);"></i> Production Cost Trend (Volume vs Unit Cost)
+            </h4>
+            <canvas id="chart-line-cost" height="220"></canvas>
+          </div>
+
+          <div class="glass-card" style="padding: 20px;">
+            <h4 style="font-size: 1rem; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="clock" style="color: var(--accent-amber);"></i> Manufacturing Lead Time (Days)
+            </h4>
+            <canvas id="chart-bar-time" height="220"></canvas>
+          </div>
+
+          <div class="glass-card" style="padding: 20px;">
+            <h4 style="font-size: 1rem; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="radar" style="color: var(--accent-violet);"></i> Multi-Criteria Radar Comparison
+            </h4>
+            <canvas id="chart-radar-eval" height="220"></canvas>
+          </div>
+
+          <div class="glass-card" style="padding: 20px;">
+            <h4 style="font-size: 1rem; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="pie-chart" style="color: var(--accent-emerald);"></i> Material Usage Distribution
+            </h4>
+            <canvas id="chart-pie-material" height="220"></canvas>
+          </div>
+        </div>
+
+        <!-- 6. Material Comparison & Manufacturing Process Comparison Tables -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 24px;">
+          <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: var(--accent-cyan); margin-bottom: 16px;">
+            <i data-lucide="table"></i> Engineering Material Comparison Matrix
+          </h3>
+          <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-color); text-align: left;">
+                  <th style="padding: 10px;">Material</th>
+                  <th style="padding: 10px;">Cost / kg</th>
+                  <th style="padding: 10px;">Tensile Strength</th>
+                  <th style="padding: 10px;">Density</th>
+                  <th style="padding: 10px;">Heat Res.</th>
+                  <th style="padding: 10px;">Machinability</th>
+                  <th style="padding: 10px;">Manufacturability</th>
+                  <th style="padding: 10px;">AI DFM Score</th>
+                  <th style="padding: 10px;">Recommendation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--border-color); background: rgba(0, 242, 254, 0.05);">
+                  <td style="padding: 10px; font-weight: 700; color: var(--accent-cyan);">ABS Plastic</td>
+                  <td style="padding: 10px;">₹140</td>
+                  <td style="padding: 10px;">45 MPa</td>
+                  <td style="padding: 10px;">1.05 g/cm³</td>
+                  <td style="padding: 10px;">95 °C</td>
+                  <td style="padding: 10px;">High</td>
+                  <td style="padding: 10px;">Excellent</td>
+                  <td style="padding: 10px;"><span class="badge badge-emerald">9.4 / 10</span></td>
+                  <td style="padding: 10px; color: var(--accent-emerald); font-weight: 600;">Recommended Choice</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 10px; font-weight: 600;">Polycarbonate (PC)</td>
+                  <td style="padding: 10px;">₹260</td>
+                  <td style="padding: 10px;">70 MPa</td>
+                  <td style="padding: 10px;">1.20 g/cm³</td>
+                  <td style="padding: 10px;">135 °C</td>
+                  <td style="padding: 10px;">Medium</td>
+                  <td style="padding: 10px;">Good</td>
+                  <td style="padding: 10px;"><span class="badge badge-cyan">8.8 / 10</span></td>
+                  <td style="padding: 10px; color: var(--text-muted);">High Impact Alt</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 10px; font-weight: 600;">Nylon 66 (PA66)</td>
+                  <td style="padding: 10px;">₹320</td>
+                  <td style="padding: 10px;">85 MPa</td>
+                  <td style="padding: 10px;">1.14 g/cm³</td>
+                  <td style="padding: 10px;">180 °C</td>
+                  <td style="padding: 10px;">Medium</td>
+                  <td style="padding: 10px;">Good</td>
+                  <td style="padding: 10px;"><span class="badge badge-cyan">8.4 / 10</span></td>
+                  <td style="padding: 10px; color: var(--text-muted);">Wear Resistant Alt</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 10px; font-weight: 600;">Aluminum 6061-T6</td>
+                  <td style="padding: 10px;">₹450</td>
+                  <td style="padding: 10px;">310 MPa</td>
+                  <td style="padding: 10px;">2.70 g/cm³</td>
+                  <td style="padding: 10px;">300 °C</td>
+                  <td style="padding: 10px;">High</td>
+                  <td style="padding: 10px;">Moderate</td>
+                  <td style="padding: 10px;"><span class="badge badge-amber">7.9 / 10</span></td>
+                  <td style="padding: 10px; color: var(--text-muted);">High Strength Alt</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 10px; font-weight: 600;">Stainless Steel 316L</td>
+                  <td style="padding: 10px;">₹680</td>
+                  <td style="padding: 10px;">515 MPa</td>
+                  <td style="padding: 10px;">8.00 g/cm³</td>
+                  <td style="padding: 10px;">800 °C</td>
+                  <td style="padding: 10px;">Medium</td>
+                  <td style="padding: 10px;">Specialized</td>
+                  <td style="padding: 10px;"><span class="badge badge-violet">7.2 / 10</span></td>
+                  <td style="padding: 10px; color: var(--text-muted);">Corrosion Grade</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 7. Sustainability Dashboard & Manufacturing Risk Analysis -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+          <!-- Sustainability Dashboard -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: #10b981; margin-bottom: 16px;">
+              <i data-lucide="leaf"></i> Sustainability & Eco-Impact Assessment
+            </h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-sm); padding: 12px; text-align: center;">
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Carbon Footprint</span>
+                <div style="font-size: 1.3rem; font-weight: 700; color: #10b981; margin-top: 4px;">1.8 kg CO2e / unit</div>
               </div>
+              <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-sm); padding: 12px; text-align: center;">
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Recyclability Score</span>
+                <div style="font-size: 1.3rem; font-weight: 700; color: #10b981; margin-top: 4px;">100% Recyclable</div>
+              </div>
+              <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-sm); padding: 12px; text-align: center;">
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Energy Consumption</span>
+                <div style="font-size: 1.3rem; font-weight: 700; color: #10b981; margin-top: 4px;">0.42 kWh / unit</div>
+              </div>
+              <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-sm); padding: 12px; text-align: center;">
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Environmental Rating</span>
+                <div style="font-size: 1.3rem; font-weight: 700; color: #10b981; margin-top: 4px;">Grade A+ Eco</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Manufacturing Risk Analysis -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: var(--accent-rose); margin-bottom: 16px;">
+              <i data-lucide="alert-triangle"></i> Manufacturing Risk Matrix
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm);">
+                <span>Material Availability & Supply Chain</span>
+                <span class="badge badge-emerald">Low Risk (2.1%)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm);">
+                <span>Tooling & Mold Lead Time Delay</span>
+                <span class="badge badge-amber">Moderate (8.4%)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm);">
+                <span>Machine Compatibility & Precision Tolerances</span>
+                <span class="badge badge-emerald">Low Risk (1.5%)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm);">
+                <span>Assembly Complexity & Defect Rate</span>
+                <span class="badge badge-emerald">Low Risk (3.0%)</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); font-weight: 700;">
+                <span>Overall Project Failure Risk Score</span>
+                <span class="badge badge-emerald" style="font-size: 0.85rem;">Very Low (3.75%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. Project Lifecycle & Version History Comparison -->
+        <div class="glass-card" style="padding: 24px; margin-bottom: 24px;">
+          <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: var(--accent-cyan); margin-bottom: 16px;">
+            <i data-lucide="layers"></i> Product Lifecycle & Version Control Tracker
+          </h3>
+          <div class="lifecycle-stepper">
+            <div class="lifecycle-step completed">1</div>
+            <div class="lifecycle-step completed">2</div>
+            <div class="lifecycle-step completed">3</div>
+            <div class="lifecycle-step active">4</div>
+            <div class="lifecycle-step">5</div>
+            <div class="lifecycle-step">6</div>
+            <div class="lifecycle-step">7</div>
+            <div class="lifecycle-step">8</div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: var(--text-muted); text-align: center;">
+            <span>1. Idea</span><span>2. Requirements</span><span>3. Material</span><span style="color: var(--accent-cyan); font-weight: 700;">4. Manufacturing</span><span>5. Prototype</span><span>6. Testing</span><span>7. Production</span><span>8. Completed</span>
+          </div>
+        </div>
+
+        <!-- 9. Team Collaboration & Download Center -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+          <!-- Team Collaboration Module -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: var(--accent-purple); margin-bottom: 14px;">
+              <i data-lucide="users"></i> Engineering Team Collaboration
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="avatar-circle" style="width: 32px; height: 32px; font-size: 0.8rem;">SS</div>
+                  <div>
+                    <div style="font-weight: 600;">Sai Swetha</div>
+                    <div style="font-size: 0.74rem; color: var(--text-muted);">Lead DFM Engineer (Owner)</div>
+                  </div>
+                </div>
+                <span class="badge badge-emerald">Approved</span>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="avatar-circle" style="width: 32px; height: 32px; font-size: 0.8rem; background: var(--accent-purple); color: #fff;">RK</div>
+                  <div>
+                    <div style="font-weight: 600;">Rahul Kumar</div>
+                    <div style="font-size: 0.74rem; color: var(--text-muted);">Manufacturing Reviewer</div>
+                  </div>
+                </div>
+                <span class="badge badge-cyan">Reviewed</span>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm" style="margin-top: 14px; width: 100%;" onclick="alert('Team invitation modal triggered. Enter engineer email address.');">
+              <i data-lucide="user-plus"></i> Invite Engineer to Project
+            </button>
+          </div>
+
+          <!-- Engineering Download Center Card -->
+          <div class="glass-card" style="padding: 24px;">
+            <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: var(--accent-cyan); margin-bottom: 14px;">
+              <i data-lucide="download-cloud"></i> Multi-Format Report Exporter
+            </h3>
+            <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 16px;">Export complete technical DFM analysis, cost breakdown, material datasheets, and 2D blueprints.</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <button class="btn btn-primary btn-sm" onclick="window.app.downloadReport()">
+                <i data-lucide="file-text"></i> PDF Report
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="window.app.exportExcel()">
+                <i data-lucide="sheet"></i> Excel (.CSV)
+              </button>
+              <button class="btn btn-ghost btn-sm" onclick="window.app.exportWord()">
+                <i data-lucide="file-code"></i> Word (.DOCX)
+              </button>
+              <button class="btn btn-ghost btn-sm" onclick="window.print()">
+                <i data-lucide="printer"></i> Print Summary
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </section>
             </div>
           </div>
 
@@ -1754,7 +2072,65 @@
         </div>
       </form>
     </div>
+  <!-- Floating Quick Action Button (FAB) Menu -->
+  <div class="fab-container" id="fab-floating-container">
+    <div id="fab-menu" class="fab-menu hidden">
+      <div class="fab-menu-item" data-target-view="create-product-wizard"><i data-lucide="plus-circle" style="color: var(--accent-cyan);"></i> Create New Product</div>
+      <div class="fab-menu-item" onclick="window.app.downloadReport()"><i data-lucide="file-text" style="color: var(--accent-emerald);"></i> Export DFM Report</div>
+      <div class="fab-menu-item" onclick="window.app.openAiChat()"><i data-lucide="bot" style="color: var(--accent-purple);"></i> Open AI Assistant</div>
+      <div class="fab-menu-item" onclick="window.app.toggleNotificationsDropdown()"><i data-lucide="bell" style="color: var(--accent-amber);"></i> View AI Notifications</div>
+    </div>
+    <button class="fab-trigger" onclick="window.app.toggleFabMenu()" title="Quick Actions Menu">
+      <i data-lucide="zap" style="width: 24px; height: 24px;"></i>
+    </button>
   </div>
+
+  <!-- Floating AI Assistant Chatbot Widget -->
+  <div class="ai-chatbot-widget" id="ai-chatbot-widget">
+    <div id="ai-chat-window" class="ai-chat-window hidden">
+      <div class="ai-chat-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="avatar-circle" style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: #040914; font-size: 0.8rem;"><i data-lucide="bot" style="width: 18px;"></i></div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.9rem;">MethodWise AI Assistant</div>
+            <div style="font-size: 0.72rem; color: var(--accent-emerald); display: flex; align-items: center; gap: 4px;">● Online • DFM & CAD Expert</div>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-xs" onclick="window.app.closeAiChat()"><i data-lucide="x"></i></button>
+      </div>
+
+      <div id="ai-chat-messages" class="ai-chat-messages">
+        <div class="chat-bubble bot">
+          Hello Sai Swetha! 👋 I am your MethodWise AI Engineering Assistant. Ask me anything about material selection, DFM rules, cost optimization, or 3D/2D CAD blueprints!
+        </div>
+      </div>
+
+      <form id="ai-chat-form" class="ai-chat-input-row" onsubmit="window.app.sendAiChatMessage(event)">
+        <input type="text" id="ai-chat-input" class="form-control" placeholder="Ask about materials, DFM rules, cost..." autocomplete="off" style="font-size: 0.85rem;">
+        <button type="submit" class="btn btn-primary btn-sm"><i data-lucide="send"></i></button>
+      </form>
+    </div>
+
+    <button class="ai-chatbot-toggle" id="ai-chatbot-toggle-btn" onclick="window.app.toggleAiChat()" title="Ask MethodWise AI Assistant">
+      <i data-lucide="bot" style="width: 28px; height: 28px;"></i>
+    </button>
+  </div>
+
+  <!-- Enterprise System Footer -->
+  <footer id="enterprise-footer" style="margin-top: 60px; padding: 24px; border-top: 1px solid var(--border-color); background: rgba(8, 13, 26, 0.9); font-size: 0.82rem; color: var(--text-dim);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; max-width: 1400px; margin: 0 auto;">
+      <div>
+        <strong style="color: var(--text-main);">MethodWise AI Platform v2.4</strong> • Enterprise Decision Advisor
+      </div>
+      <div style="display: flex; gap: 20px;">
+        <span>Cloud Status: <strong style="color: var(--accent-emerald);">Operational</strong></span>
+        <span>AI Engine: <strong style="color: var(--accent-cyan);">Online</strong></span>
+        <span>Last Sync: <strong style="color: var(--text-main);">2s ago</strong></span>
+        <span>Server Port: <strong style="color: var(--accent-purple);">8080</strong></span>
+        <span>DB: <strong style="color: var(--accent-amber);">Active JSON REST</strong></span>
+      </div>
+    </div>
+  </footer>
 
   <!-- JavaScript Application Bundle -->
   <script src="js/data.js"></script>
