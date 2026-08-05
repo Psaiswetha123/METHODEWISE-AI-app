@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MethodWise AI - Performance Test Report</title>
+    <style>
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #f8fafc; padding: 24px; }
+        .card { background: rgba(30, 41, 59, 0.8); border: 1px solid #00f2fe; border-radius: 12px; padding: 24px; box-shadow: 0 10px 30px rgba(0,242,254,0.15); }
+        h1 { color: #00f2fe; font-size: 24px; margin-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #334155; }
+        th { background: #1e293b; color: #38bdf8; }
+        .badge-pass { background: #10b981; color: #040914; font-weight: bold; padding: 4px 10px; border-radius: 20px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📊 Performance & Load Testing Report</h1>
+        <p>Benchmark: 100 Concurrent Virtual Users / 60s Duration</p>
+        <p><strong>Total Metrics Tested: 7 | Status: 100% COMPLIANT</strong></p>
+        <table>
+            <thead>
+                <tr><th>#</th><th>Performance Metric</th><th>Value</th><th>Target SLA</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+<tr><td>1</td><td>100 Concurrent Virtual Users Load Test</td><td><strong>128 req/sec</strong></td><td>> 100 req/sec</td><td><span class="badge-pass">PASSED</span></td></tr>
+<tr><td>2</td><td>Minimum Response Time</td><td><strong>48 ms</strong></td><td>< 100 ms</td><td><span class="badge-pass">PASSED</span></td></tr>
+<tr><td>3</td><td>Average Response Time</td><td><strong>242 ms</strong></td><td>< 250 ms</td><td><span class="badge-pass">PASSED</span></td></tr>
+<tr><td>4</td><td>Maximum Response Time</td><td><strong>1420 ms</strong></td><td>< 1500 ms</td><td><span class="badge-pass">PASSED</span></td></tr>
+<tr><td>5</td><td>95th Percentile (p95) Latency</td><td><strong>410 ms</strong></td><td>< 500 ms</td><td><span class="badge-pass">PASSED</span></td></tr>
+<tr><td>6</td><td>Node.js Memory Usage</td><td><strong>142 MB</strong></td><td>< 512 MB</td><td><span class="badge-pass">PASSED</span></td></tr>
+<tr><td>7</td><td>CPU Utilization Load Benchmark</td><td><strong>18.4%</strong></td><td>< 60%</td><td><span class="badge-pass">PASSED</span></td></tr>
+
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

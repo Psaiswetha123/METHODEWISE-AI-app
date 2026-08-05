@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MethodWise AI - REST API Test Report</title>
+    <style>
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #f8fafc; padding: 24px; }
+        .card { background: rgba(30, 41, 59, 0.8); border: 1px solid #00f2fe; border-radius: 12px; padding: 24px; box-shadow: 0 10px 30px rgba(0,242,254,0.15); }
+        h1 { color: #00f2fe; font-size: 24px; margin-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #334155; }
+        th { background: #1e293b; color: #38bdf8; }
+        .badge-pass { background: #10b981; color: #040914; font-weight: bold; padding: 4px 10px; border-radius: 20px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>⚡ REST API Test Report</h1>
+        <p>Target: MethodWise AI Backend REST Server (backend.js & server.js)</p>
+        <p><strong>Total Cases: 10 | Passed: 10 | Pass Rate: 100%</strong></p>
+        <table>
+            <thead>
+                <tr><th>#</th><th>Test Case</th><th>Status</th><th>Details</th></tr>
+            </thead>
+            <tbody>
+<tr><td>1</td><td>Authentication REST API</td><td><span class="badge-pass">PASSED</span></td><td>Token & session management OK</td></tr>
+<tr><td>2</td><td>Login API</td><td><span class="badge-pass">PASSED</span></td><td>POST /api/auth/login verified</td></tr>
+<tr><td>3</td><td>Register & User Provisioning API</td><td><span class="badge-pass">PASSED</span></td><td>POST /api/auth/register verified</td></tr>
+<tr><td>4</td><td>Forgot Password & OTP API</td><td><span class="badge-pass">PASSED</span></td><td>POST /api/auth/forgot-password & verify-otp OK</td></tr>
+<tr><td>5</td><td>Projects REST API</td><td><span class="badge-pass">PASSED</span></td><td>GET/POST/DELETE /api/projects OK</td></tr>
+<tr><td>6</td><td>Material Advisor API</td><td><span class="badge-pass">PASSED</span></td><td>GET /api/favorites & material specs OK</td></tr>
+<tr><td>7</td><td>Manufacturing Process API</td><td><span class="badge-pass">PASSED</span></td><td>GET /api/manufacturing-options OK</td></tr>
+<tr><td>8</td><td>AI Recommendation API</td><td><span class="badge-pass">PASSED</span></td><td>POST /api/recommendations OK</td></tr>
+<tr><td>9</td><td>Design History Sync API</td><td><span class="badge-pass">PASSED</span></td><td>GET/POST /api/history OK</td></tr>
+<tr><td>10</td><td>System Settings API</td><td><span class="badge-pass">PASSED</span></td><td>GET/POST /api/settings OK</td></tr>
+
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "id": "proj-8842",
+  "name": "Smart Board",
+  "type": "Consumer Electronics",
+  "date": "2026-07-30",
+  "material": "ABS Plastic",
+  "process": "Injection Molding",
+  "costRange": "₹500 - ₹900",
+  "unitCost": 650,
+  "score": 9.4,
+  "manufacturabilityScore": 96,
+  "strengthScore": 92,
+  "sustainabilityScore": 90,
+  "status": "Ready for Manufacturing"
+}

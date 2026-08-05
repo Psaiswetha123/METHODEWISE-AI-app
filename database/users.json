@@ -1,0 +1,15 @@
+[
+  {
+    "id": "usr-1",
+    "name": "Engineering Lead",
+    "email": "engineer@methodwise.ai",
+    "role": "Admin"
+  },
+  {
+    "id": "usr-7687",
+    "name": "saiswethanaidu.56",
+    "email": "saiswethanaidu.56@gmail.com",
+    "password": "newsecurepass123",
+    "role": "User"
+  }
+]

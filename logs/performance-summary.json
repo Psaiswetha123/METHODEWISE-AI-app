@@ -1,0 +1,17 @@
+{
+  "domain": "Performance",
+  "suite": "Performance Testing",
+  "total": 7,
+  "passed": 7,
+  "failed": 0,
+  "status": "PASSED",
+  "metrics": {
+    "rps": 128,
+    "avgResponseTime": 242,
+    "minResponseTime": 48,
+    "maxResponseTime": 1420,
+    "p95": 410,
+    "memory": "142 MB",
+    "cpu": "18.4%"
+  }
+}

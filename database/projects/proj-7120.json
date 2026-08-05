@@ -1,0 +1,15 @@
+{
+  "id": "proj-7120",
+  "name": "MediPump Enclosure",
+  "type": "Medical Equipment",
+  "date": "2026-07-28",
+  "material": "Titanium Ti-6Al-4V",
+  "process": "CNC Machining",
+  "costRange": "₹1,200 - ₹1,800",
+  "unitCost": 1450,
+  "score": 9.6,
+  "manufacturabilityScore": 95,
+  "strengthScore": 98,
+  "sustainabilityScore": 92,
+  "status": "Ready for Production"
+}
