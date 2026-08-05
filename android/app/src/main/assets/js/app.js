@@ -36,7 +36,7 @@ class MethodWiseApp {
     this.bindEvents();
 
     // 6. Restore user profile if session exists
-    if (window.MethodWiseSync) {
+    if (window.MethodWiseSync && typeof window.MethodWiseSync.getAuthSession === 'function') {
       const session = window.MethodWiseSync.getAuthSession();
       if (session && session.isLoggedIn && session.user && session.user.email) {
         this.isLoggedIn = true;
@@ -56,16 +56,19 @@ class MethodWiseApp {
     if (loginForm) {
       loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        this.handleLogin();
+        this.handleLogin(e);
       });
     }
 
     const demoLoginBtn = document.getElementById('demo-login-btn');
     if (demoLoginBtn) {
-      demoLoginBtn.addEventListener('click', () => {
-        document.getElementById('login-email').value = 'engineer@methodwise.ai';
-        document.getElementById('login-password').value = 'demo12345';
-        this.handleLogin();
+      demoLoginBtn.addEventListener('click', (e) => {
+        if (e) e.preventDefault();
+        const emailEl = document.getElementById('login-email');
+        const passEl = document.getElementById('login-password');
+        if (emailEl && !emailEl.value) emailEl.value = 'saiswethanaidu.56@gmail.com';
+        if (passEl && !passEl.value) passEl.value = 'demo12345';
+        this.handleLogin(e);
       });
     }
 
@@ -91,6 +94,26 @@ class MethodWiseApp {
         document.querySelector('.app-shell').classList.toggle('sidebar-collapsed');
       });
     }
+
+    // Global AI Search Input & Dropdown Listener
+    const globalSearchInput = document.getElementById('global-search-input');
+    if (globalSearchInput) {
+      globalSearchInput.addEventListener('input', () => this.handleGlobalAiSearch());
+      globalSearchInput.addEventListener('focus', () => this.handleGlobalAiSearch());
+      globalSearchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.openAiChatWithQuery(globalSearchInput.value.trim());
+        }
+      });
+    }
+
+    document.addEventListener('click', (e) => {
+      const container = document.getElementById('topbar-ai-search-container');
+      if (container && !container.contains(e.target)) {
+        this.closeGlobalAiSearch();
+      }
+    });
 
     // 3D Preview Page Controls
     const btnWireframe = document.getElementById('btn-3d-wireframe');
@@ -321,16 +344,21 @@ class MethodWiseApp {
 
 
   updateUserProfile(email, customName = null, customRole = null) {
-    if (!email) return;
+    if (!email) email = 'saiswethanaidu.56@gmail.com';
     let formattedName = customName;
     if (!formattedName) {
-      const username = email.split('@')[0];
-      const parts = username.replace(/[._\-+]/g, ' ').trim().split(/\s+/);
-      formattedName = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
+      const lower = email.toLowerCase();
+      if (lower.includes('swetha') || lower.includes('sai')) {
+        formattedName = 'Sai Swetha';
+      } else {
+        const username = email.split('@')[0];
+        const parts = username.replace(/[._\-+]/g, ' ').trim().split(/\s+/);
+        formattedName = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
+      }
     }
 
     const parts = formattedName.split(/\s+/);
-    let avatarText = 'MW';
+    let avatarText = 'SS';
     if (parts.length >= 2 && parts[0] && parts[1]) {
       avatarText = (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
     } else if (parts[0] && parts[0].length >= 2) {
@@ -342,10 +370,12 @@ class MethodWiseApp {
     const avatarElem = document.getElementById('topbar-user-avatar');
     const nameElem = document.getElementById('topbar-user-name');
     const roleElem = document.getElementById('topbar-user-role');
+    const welcomeNameElem = document.getElementById('welcome-user-name');
 
     if (avatarElem) avatarElem.textContent = avatarText;
     if (nameElem) nameElem.textContent = formattedName;
     if (roleElem) roleElem.textContent = email;
+    if (welcomeNameElem) welcomeNameElem.textContent = formattedName;
 
     // Update Modal Form values as well
     const modalAvatar = document.getElementById('modal-user-avatar');
@@ -400,21 +430,210 @@ class MethodWiseApp {
     this.showToast('Profile & account details updated successfully!', 'success');
   }
 
-  handleLogin() {
+  handleLogin(e) {
+    if (e) e.preventDefault();
     const emailInput = document.getElementById('login-email');
     const passwordInput = document.getElementById('login-password');
-    const email = emailInput ? emailInput.value.trim() : '';
-    const password = passwordInput ? passwordInput.value.trim() : '';
+    let email = emailInput ? emailInput.value.trim() : '';
+    let password = passwordInput ? passwordInput.value.trim() : '';
 
-    if (!email || !password) {
-      this.showToast('Please enter your work email and password', 'warning');
-      return;
-    }
+    if (!email) email = 'engineer@methodwise.ai';
+    if (!password) password = 'demo12345';
+
+    if (emailInput) emailInput.value = email;
+    if (passwordInput) passwordInput.value = password;
 
     this.isLoggedIn = true;
+    if (window.MethodWiseSync && typeof window.MethodWiseSync.saveAuthSession === 'function') {
+      window.MethodWiseSync.saveAuthSession(true, { email: email, name: email.split('@')[0] });
+    }
     this.updateUserProfile(email);
     this.showToast(`Login successful! Welcome ${email}`, 'success');
     this.switchView('dashboard-overview');
+  }
+
+  async handleForgotPassword(e) {
+    if (e) e.preventDefault();
+    const emailInput = document.getElementById('login-email');
+    let email = emailInput ? emailInput.value.trim() : '';
+
+    if (!email) {
+      this.showToast('Please enter your Gmail / Work email in the email field first.', 'warning');
+      if (emailInput) emailInput.focus();
+      return;
+    }
+
+    let generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      });
+      const data = await response.json();
+      if (data && data.success && data.otp) {
+        generatedOtp = data.otp;
+      }
+    } catch (err) {
+      console.warn('Backend server offline or unreachable for OTP. Using local OTP engine.', err);
+    }
+
+    this.activeOtpEmail = email.toLowerCase();
+    this.activeOtpCode = generatedOtp;
+
+    const emailDisplay = document.getElementById('otp-target-email');
+    if (emailDisplay) emailDisplay.textContent = email;
+
+    const step1 = document.getElementById('otp-step-1');
+    const step2 = document.getElementById('otp-step-2');
+    if (step1) step1.classList.remove('hidden');
+    if (step2) step2.classList.add('hidden');
+
+    const otpInput = document.getElementById('otp-input');
+    if (otpInput) {
+      otpInput.value = '';
+      setTimeout(() => otpInput.focus(), 200);
+    }
+
+    const modal = document.getElementById('otp-modal');
+    if (modal) modal.classList.remove('hidden');
+
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
+
+    this.showToast(`🔑 Verification OTP code sent to ${email}! [Code: ${generatedOtp}]`, 'info', 10000);
+    this.startOtpCountdown(60);
+  }
+
+  startOtpCountdown(seconds) {
+    if (this.otpTimer) clearInterval(this.otpTimer);
+    const resendBtn = document.getElementById('resend-otp-btn');
+    const countdownEl = document.getElementById('otp-countdown');
+    
+    let count = seconds;
+    if (resendBtn) resendBtn.disabled = true;
+    if (countdownEl) countdownEl.textContent = `(${count}s)`;
+
+    this.otpTimer = setInterval(() => {
+      count--;
+      if (count <= 0) {
+        clearInterval(this.otpTimer);
+        if (resendBtn) resendBtn.disabled = false;
+        if (countdownEl) countdownEl.textContent = '';
+      } else {
+        if (countdownEl) countdownEl.textContent = `(${count}s)`;
+      }
+    }, 1000);
+  }
+
+  handleResendOtp() {
+    this.showToast('Resending new OTP verification code...', 'info');
+    this.handleForgotPassword();
+  }
+
+  async handleVerifyOtp(e) {
+    if (e) e.preventDefault();
+    const otpInput = document.getElementById('otp-input');
+    const enteredOtp = otpInput ? otpInput.value.trim() : '';
+
+    if (!enteredOtp || enteredOtp.length !== 6 || isNaN(enteredOtp)) {
+      this.showToast('Please enter a valid 6-digit numeric OTP code.', 'error');
+      if (otpInput) otpInput.focus();
+      return;
+    }
+
+    let isVerified = false;
+
+    try {
+      const response = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: this.activeOtpEmail, otp: enteredOtp })
+      });
+      const data = await response.json();
+      if (data && data.success) {
+        isVerified = true;
+      } else if (data && data.error) {
+        this.showToast(data.error, 'error');
+        return;
+      }
+    } catch (err) {
+      if (enteredOtp === this.activeOtpCode) {
+        isVerified = true;
+      }
+    }
+
+    if (isVerified || enteredOtp === this.activeOtpCode) {
+      this.verifiedOtp = enteredOtp;
+      const step1 = document.getElementById('otp-step-1');
+      const step2 = document.getElementById('otp-step-2');
+      if (step1) step1.classList.add('hidden');
+      if (step2) step2.classList.remove('hidden');
+
+      const pwdInput = document.getElementById('new-password-input');
+      if (pwdInput) setTimeout(() => pwdInput.focus(), 200);
+
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+
+      this.showToast('OTP verified successfully! Please enter your new password.', 'success');
+    } else {
+      this.showToast('Incorrect OTP code. Please check your email and try again.', 'error');
+    }
+  }
+
+  async handleResetPassword(e) {
+    if (e) e.preventDefault();
+    const newPwdInput = document.getElementById('new-password-input');
+    const confirmPwdInput = document.getElementById('confirm-password-input');
+
+    const newPassword = newPwdInput ? newPwdInput.value : '';
+    const confirmPassword = confirmPwdInput ? confirmPwdInput.value : '';
+
+    if (!newPassword || newPassword.length < 4) {
+      this.showToast('Password must be at least 4 characters long.', 'error');
+      if (newPwdInput) newPwdInput.focus();
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      this.showToast('Passwords do not match. Please re-enter.', 'error');
+      if (confirmPwdInput) confirmPwdInput.focus();
+      return;
+    }
+
+    try {
+      await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: this.activeOtpEmail,
+          otp: this.verifiedOtp || this.activeOtpCode,
+          newPassword: newPassword
+        })
+      });
+    } catch (err) {
+      console.warn('Backend server offline during password reset. Proceeding with local session update.');
+    }
+
+    this.closeOtpModal();
+
+    const emailInput = document.getElementById('login-email');
+    const passwordInput = document.getElementById('login-password');
+    if (emailInput && this.activeOtpEmail) emailInput.value = this.activeOtpEmail;
+    if (passwordInput) passwordInput.value = newPassword;
+
+    this.showToast('Password reset successful! Logging you into MethodWise AI...', 'success');
+    this.handleLogin(e);
+  }
+
+  closeOtpModal() {
+    const modal = document.getElementById('otp-modal');
+    if (modal) modal.classList.add('hidden');
+    if (this.otpTimer) clearInterval(this.otpTimer);
   }
 
   handleLogout() {
@@ -438,21 +657,35 @@ class MethodWiseApp {
     const appShell = document.getElementById('app-shell');
 
     if (viewId === 'login-screen') {
-      if (loginScreen) loginScreen.classList.remove('hidden');
-      if (appShell) appShell.classList.add('hidden');
+      if (loginScreen) {
+        loginScreen.classList.remove('hidden');
+        loginScreen.style.display = 'flex';
+      }
+      if (appShell) {
+        appShell.classList.add('hidden');
+        appShell.style.display = 'none';
+      }
     } else {
-      if (loginScreen) loginScreen.classList.add('hidden');
-      if (appShell) appShell.classList.remove('hidden');
+      if (loginScreen) {
+        loginScreen.classList.add('hidden');
+        loginScreen.style.display = 'none';
+      }
+      if (appShell) {
+        appShell.classList.remove('hidden');
+        appShell.style.display = 'grid';
+      }
 
       // Hide all sub-views in app shell, show active
       document.querySelectorAll('.view-section').forEach(sec => {
         sec.classList.add('hidden');
+        sec.style.display = 'none';
         sec.classList.remove('active');
       });
 
       const activeSec = document.getElementById(viewId);
       if (activeSec) {
         activeSec.classList.remove('hidden');
+        activeSec.style.display = 'block';
         activeSec.classList.add('active');
       }
 
@@ -466,10 +699,16 @@ class MethodWiseApp {
       });
 
       // Special initializations based on view
-      this.onViewActivated(viewId);
+      try {
+        this.onViewActivated(viewId);
+      } catch (err) {
+        console.warn('onViewActivated non-fatal error:', err);
+      }
     }
 
-    if (window.lucide) window.lucide.createIcons();
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      try { window.lucide.createIcons(); } catch (e) {}
+    }
     window.scrollTo(0, 0);
   }
 
@@ -553,18 +792,47 @@ class MethodWiseApp {
       if (!win.classList.contains('hidden')) {
         const input = document.getElementById('ai-chat-input');
         if (input) input.focus();
+        const container = document.getElementById('ai-chat-messages');
+        if (container) container.scrollTop = container.scrollHeight;
       }
     }
   }
 
   openAiChat() {
     const win = document.getElementById('ai-chat-window');
-    if (win) win.classList.remove('hidden');
+    if (win) {
+      win.classList.remove('hidden');
+      const input = document.getElementById('ai-chat-input');
+      if (input) input.focus();
+      const container = document.getElementById('ai-chat-messages');
+      if (container) container.scrollTop = container.scrollHeight;
+    }
   }
 
   closeAiChat() {
     const win = document.getElementById('ai-chat-window');
     if (win) win.classList.add('hidden');
+  }
+
+  clearAiChat() {
+    const container = document.getElementById('ai-chat-messages');
+    if (!container) return;
+    const activeProd = this.savedProjects.length > 0 ? this.savedProjects[0].name : 'Smart Board';
+    container.innerHTML = `
+      <div class="chat-bubble bot">
+        Hello Sai Swetha! 👋 I am your MethodWise AI Engineering Assistant. Currently assisting on active product: <strong>${activeProd}</strong>.<br><br>
+        Ask me anything about material selection, DFM rules, cost optimization, or 3D/2D CAD blueprints!
+      </div>
+    `;
+    this.showToast('Chat history cleared.', 'info');
+  }
+
+  sendQuickAiPrompt(promptText) {
+    const input = document.getElementById('ai-chat-input');
+    if (input) {
+      input.value = promptText;
+      this.sendAiChatMessage();
+    }
   }
 
   sendAiChatMessage(e) {
@@ -584,27 +852,238 @@ class MethodWiseApp {
     input.value = '';
     container.scrollTop = container.scrollHeight;
 
-    // Generate AI Engineering Response
-    setTimeout(() => {
-      let replyText = `For optimal manufacturing efficiency and cost control, MethodWise AI recommends evaluating ABS Plastic or Aluminum 6061 with standard Injection Molding or CNC Machining tolerances.`;
-      
-      const q = query.toLowerCase();
-      if (q.includes('material') || q.includes('abs') || q.includes('metal')) {
-        replyText = `ABS Plastic offers high impact strength (45 MPa) at ₹140/kg with 100% recyclability. For heavy structural applications, Aluminum 6061-T6 (310 MPa) is recommended.`;
-      } else if (q.includes('cost') || q.includes('price') || q.includes('budget')) {
-        replyText = `Unit production cost drops from ₹1,450 at 1,000 units to ₹480 at 5,000 volume due to NRE mold amortization. Material cost accounts for 38% of total unit cost.`;
-      } else if (q.includes('dfm') || q.includes('rule') || q.includes('draft')) {
-        replyText = `Ensure a minimum 1.5° draft angle on vertical mold walls to prevent component drag marks during ejector pin stroke. Uniform wall thickness should be maintained at 2.5mm.`;
-      } else if (q.includes('report') || q.includes('export') || q.includes('pdf')) {
-        replyText = `You can export complete PDF reports, CSV datasheets, and Word executive summaries anytime using the Multi-Format Exporter!`;
-      }
+    // Show Typing Indicator
+    const typingBubble = document.createElement('div');
+    typingBubble.id = 'ai-typing-indicator';
+    typingBubble.className = 'chat-bubble bot typing-indicator';
+    typingBubble.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    container.appendChild(typingBubble);
+    container.scrollTop = container.scrollHeight;
 
+    // Generate Context-Aware Engineering Response
+    setTimeout(() => {
+      // Remove Typing Indicator
+      const indicator = document.getElementById('ai-typing-indicator');
+      if (indicator) indicator.remove();
+
+      const replyText = this.generateAiResponse(query);
+      
       const botMsg = document.createElement('div');
       botMsg.className = 'chat-bubble bot';
-      botMsg.textContent = replyText;
+      botMsg.innerHTML = replyText;
       container.appendChild(botMsg);
       container.scrollTop = container.scrollHeight;
-    }, 600);
+
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }, 650);
+  }
+
+  generateAiResponse(query) {
+    const q = query.toLowerCase();
+    const activeProject = (this.savedProjects && this.savedProjects.length > 0) ? this.savedProjects[0] : {
+      name: 'Smart Board',
+      material: 'ABS Plastic',
+      process: 'Injection Molding',
+      unitCost: 480,
+      score: 9.4
+    };
+
+    // 1. Active Project Status / Context
+    if (q.includes('active') || q.includes('project') || q.includes('status') || q.includes('smart board') || q.includes('helmet')) {
+      return `
+        <strong>📊 Active Project Summary: ${activeProject.name}</strong><br>
+        <ul>
+          <li><strong>Material:</strong> ${activeProject.material || 'ABS Plastic'}</li>
+          <li><strong>Process:</strong> ${activeProject.process || 'Injection Molding'}</li>
+          <li><strong>Unit Cost:</strong> ₹${activeProject.unitCost || 480}</li>
+          <li><strong>DFM Rating:</strong> ${activeProject.score || '9.4'} / 10</li>
+        </ul>
+        <div class="chat-callout">
+          ✨ MethodWise AI Engine Status: <strong>Grade A+ Production Ready</strong>. 100% DFM pass rate verified.
+        </div>
+      `;
+    }
+
+    // 2. Material Advisor & Recommendation
+    if (q.includes('material') || q.includes('abs') || q.includes('metal') || q.includes('titanium') || q.includes('aluminum') || q.includes('plastic') || q.includes('carbon')) {
+      if (q.includes('abs')) {
+        return `
+          <strong>🧪 Material Profile: ABS Plastic (Acrylonitrile Butadiene Styrene)</strong><br>
+          <ul>
+            <li><strong>Density:</strong> 1.05 g/cm³</li>
+            <li><strong>Tensile Strength:</strong> 45 MPa</li>
+            <li><strong>Cost Index:</strong> ₹140 - ₹180 / kg</li>
+            <li><strong>Recyclability:</strong> 100% Thermoplastic</li>
+            <li><strong>Best For:</strong> Enclosures, consumer electronics, automotive trim.</li>
+          </ul>
+        `;
+      } else if (q.includes('titanium')) {
+        return `
+          <strong>⚡ Material Profile: Titanium Ti-6Al-4V (Grade 5)</strong><br>
+          <ul>
+            <li><strong>Density:</strong> 4.43 g/cm³</li>
+            <li><strong>Tensile Strength:</strong> 950 MPa (Extreme strength-to-weight ratio)</li>
+            <li><strong>Cost Index:</strong> ₹2,800 - ₹3,500 / kg</li>
+            <li><strong>Best For:</strong> Medical implants, aerospace structural components, defense equipment.</li>
+          </ul>
+        `;
+      } else if (q.includes('aluminum') || q.includes('aluminium')) {
+        return `
+          <strong>⚙️ Material Profile: Aluminium 6061-T6</strong><br>
+          <ul>
+            <li><strong>Density:</strong> 2.70 g/cm³</li>
+            <li><strong>Tensile Strength:</strong> 310 MPa</li>
+            <li><strong>Cost Index:</strong> ₹280 - ₹340 / kg</li>
+            <li><strong>Machinability:</strong> Excellent for CNC Milling & Turning.</li>
+          </ul>
+        `;
+      }
+
+      return `
+        <strong>🛠️ Material Advisor Recommendation:</strong><br>
+        For high-volume consumer products, <strong>ABS Plastic</strong> offers the best cost efficiency (₹140/kg) with 45 MPa tensile strength.<br><br>
+        If high structural strength and thermal resistance are needed, consider <strong>Aluminium 6061-T6</strong> or <strong>Polycarbonate (PC)</strong>.
+      `;
+    }
+
+    // 3. Cost Analysis & Breakdown
+    if (q.includes('cost') || q.includes('price') || q.includes('budget') || q.includes('rupee') || q.includes('nre') || q.includes('saving')) {
+      return `
+        <strong>💰 Cost Analysis & Tooling Amortization:</strong><br>
+        <ul>
+          <li><strong>Material Cost:</strong> ~38% of unit cost</li>
+          <li><strong>Manufacturing/Processing:</strong> ~42% of unit cost</li>
+          <li><strong>NRE Mold Tooling:</strong> ~20% (amortized over volume)</li>
+        </ul>
+        <div class="chat-callout">
+          💡 <strong>Cost Scaling Tip:</strong> Unit production cost drops from ₹1,450 at 1,000 batch size to <strong>₹480</strong> at 5,000 volume due to NRE mold amortization!
+        </div>
+      `;
+    }
+
+    // 4. DFM Rules & Guidelines
+    if (q.includes('dfm') || q.includes('rule') || q.includes('draft') || q.includes('wall') || q.includes('thickness') || q.includes('tolerance')) {
+      return `
+        <strong>📐 Design for Manufacturability (DFM) Guidelines:</strong><br>
+        <ol>
+          <li><strong>Draft Angle:</strong> Maintain min <code>1.5° - 2.0°</code> draft on vertical walls for clean ejector pin stroke.</li>
+          <li><strong>Wall Thickness:</strong> Keep uniform nominal wall thickness (<code>2.0mm - 2.5mm</code>) to avoid sink marks.</li>
+          <li><strong>Rib Ratio:</strong> Rib thickness should be max <code>60%</code> of nominal wall thickness.</li>
+          <li><strong>Fillet Radii:</strong> Internal radii should be at least <code>0.5x</code> wall thickness.</li>
+        </ol>
+      `;
+    }
+
+    // 5. Manufacturing Process Selection
+    if (q.includes('process') || q.includes('molding') || q.includes('cnc') || q.includes('printing') || q.includes('casting') || q.includes('sheet')) {
+      return `
+        <strong>🏭 Manufacturing Process Selection Matrix:</strong><br>
+        <ul>
+          <li><strong>Injection Molding:</strong> Recommended for volumes &gt; 500 units. Lowest unit cost.</li>
+          <li><strong>CNC Machining:</strong> Ideal for precision metals (< 500 units) or tight tolerances (±0.05mm).</li>
+          <li><strong>3D Printing (SLA/SLS):</strong> Best for rapid prototyping & low volume production (< 50 units).</li>
+          <li><strong>Sheet Metal Bending:</strong> Best for enclosures, chassis, and flat panel bracketry.</li>
+        </ul>
+      `;
+    }
+
+    // 6. CAD / 2D / 3D Visualization Assistance
+    if (q.includes('cad') || q.includes('3d') || q.includes('2d') || q.includes('blueprint') || q.includes('viewer') || q.includes('render')) {
+      return `
+        <strong>🖥️ 3D & 2D CAD Blueprint Advisor:</strong><br>
+        You can inspect full interactive 3D WebGL models, toggle wireframe grid rendering, rotate axes, and download DXF / STEP files directly from the <strong>2D CAD Blueprint</strong> and <strong>3D Design Preview</strong> tabs!
+      `;
+    }
+
+    // 7. Report Export & Exporting
+    if (q.includes('report') || q.includes('export') || q.includes('pdf') || q.includes('csv') || q.includes('excel') || q.includes('download')) {
+      return `
+        <strong>📄 Export & Report Generation:</strong><br>
+        MethodWise AI supports multi-format exports:<br>
+        • <strong>PDF Executive Report</strong> (Includes DFM score breakdown & material specs)<br>
+        • <strong>CSV Datasheet</strong> (Raw cost parameters & manufacturing specs)<br>
+        • <strong>Word Summary Document</strong><br><br>
+        Click <strong>Export DFM Report</strong> in the sidebar or top notification panel to download immediately!
+      `;
+    }
+
+    // Default Fallback with Dynamic Suggestions
+    return `
+      For active product <strong>${activeProject.name}</strong>, MethodWise AI recommends evaluating <strong>${activeProject.material || 'ABS Plastic'}</strong> manufactured via <strong>${activeProject.process || 'Injection Molding'}</strong>.<br><br>
+      You can ask me specifically about:<br>
+      • <em>"What is the best material for high impact strength?"</em><br>
+      • <em>"How much mold cost can I save at 5,000 units?"</em><br>
+      • <em>"What draft angle is required for vertical walls?"</em>
+    `;
+  }
+
+  handleGlobalAiSearch() {
+    const input = document.getElementById('global-search-input');
+    const dropdown = document.getElementById('global-search-dropdown');
+    if (!input || !dropdown) return;
+
+    const query = input.value.trim();
+    dropdown.classList.remove('hidden');
+
+    if (!query) {
+      // Default Quick AI Search Suggestions
+      dropdown.innerHTML = `
+        <div class="ai-search-header-label"><i data-lucide="sparkles"></i> MethodWise AI Quick Search & Recommendations</div>
+        <div class="ai-search-suggestion-item" onclick="window.app.selectAiSearchSuggestion('What is the best material for high strength?')">
+          <i data-lucide="zap" style="color: var(--accent-cyan);"></i> What is the best material for high strength?
+        </div>
+        <div class="ai-search-suggestion-item" onclick="window.app.selectAiSearchSuggestion('Minimum draft angle for injection molding?')">
+          <i data-lucide="ruler" style="color: var(--accent-emerald);"></i> Minimum draft angle for injection molding?
+        </div>
+        <div class="ai-search-suggestion-item" onclick="window.app.selectAiSearchSuggestion('How to reduce NRE mold tooling cost?')">
+          <i data-lucide="badge-indian-rupee" style="color: var(--accent-amber);"></i> How to reduce NRE mold tooling cost?
+        </div>
+        <div class="ai-search-suggestion-item" onclick="window.app.selectAiSearchSuggestion('Status of active project Smart Board')">
+          <i data-lucide="activity" style="color: var(--accent-purple);"></i> Status of active project Smart Board
+        </div>
+      `;
+    } else {
+      // Live Instant AI Answer
+      const aiAnswerHtml = this.generateAiResponse(query);
+      const safeQuery = query.replace(/'/g, "\\'");
+      dropdown.innerHTML = `
+        <div class="ai-search-header-label"><i data-lucide="bot"></i> AI Instant Answer for "${query}":</div>
+        <div class="ai-search-answer-box">
+          ${aiAnswerHtml}
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+          <button type="button" class="btn btn-outline btn-xs" onclick="window.app.closeGlobalAiSearch()">Close</button>
+          <button type="button" class="btn btn-primary btn-xs" onclick="window.app.openAiChatWithQuery('${safeQuery}')">
+            <i data-lucide="message-square"></i> Open in AI Chat Assistant
+          </button>
+        </div>
+      `;
+    }
+
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
+  }
+
+  closeGlobalAiSearch() {
+    const dropdown = document.getElementById('global-search-dropdown');
+    if (dropdown) dropdown.classList.add('hidden');
+  }
+
+  selectAiSearchSuggestion(query) {
+    const input = document.getElementById('global-search-input');
+    if (input) input.value = query;
+    this.handleGlobalAiSearch();
+  }
+
+  openAiChatWithQuery(query) {
+    this.closeGlobalAiSearch();
+    this.openAiChat();
+    if (query) {
+      this.sendQuickAiPrompt(query);
+    }
   }
 
   toggleFabMenu() {
@@ -995,13 +1474,18 @@ class MethodWiseApp {
   }
 
   renderDashboardStats() {
-    // Render Quick Stats values
-    document.getElementById('dash-stat-active').textContent = this.savedProjects.length;
-    const statAnalyses = document.getElementById('dash-stat-analyses');
+    // Render Quick Stats values safely
+    const elActive = document.getElementById('dash-stat-active') || document.getElementById('kpi-active-projects');
+    if (elActive) elActive.textContent = this.savedProjects.length;
+
+    const statAnalyses = document.getElementById('dash-stat-analyses') || document.getElementById('kpi-ai-analyses');
     if (statAnalyses) statAnalyses.textContent = (this.savedProjects.length * 4);
-    const statSaved = document.getElementById('dash-stat-saved');
+
+    const statSaved = document.getElementById('dash-stat-saved') || document.getElementById('kpi-total-products');
     if (statSaved) statSaved.textContent = this.savedProjects.length;
-    document.getElementById('dash-stat-accuracy').textContent = '99.4%';
+
+    const elAcc = document.getElementById('dash-stat-accuracy') || document.getElementById('kpi-mfg-readiness');
+    if (elAcc) elAcc.textContent = '99.4%';
 
     // Render Recent Activity List (Last 5 Analyzed Products with View button)
     const actList = document.getElementById('dash-recent-activity');
@@ -1657,6 +2141,24 @@ window.setActiveProductName = function(name) {
 };
 
 // Global Standalone Fallbacks for Floating Widgets & AI Chatbot
+window.handleLogin = function(e) {
+  if (e) e.preventDefault();
+  if (window.app && typeof window.app.handleLogin === 'function') {
+    window.app.handleLogin(e);
+  } else {
+    const loginScreen = document.getElementById('login-screen');
+    const appShell = document.getElementById('app-shell');
+    if (loginScreen) {
+      loginScreen.classList.add('hidden');
+      loginScreen.style.display = 'none';
+    }
+    if (appShell) {
+      appShell.classList.remove('hidden');
+      appShell.style.display = 'grid';
+    }
+  }
+};
+
 window.toggleAiChat = function() {
   if (window.app && typeof window.app.toggleAiChat === 'function') {
     window.app.toggleAiChat();
@@ -1684,9 +2186,45 @@ window.closeAiChat = function() {
   }
 };
 
+window.clearAiChat = function() {
+  if (window.app && typeof window.app.clearAiChat === 'function') {
+    window.app.clearAiChat();
+  }
+};
+
+window.sendQuickAiPrompt = function(text) {
+  if (window.app && typeof window.app.sendQuickAiPrompt === 'function') {
+    window.app.sendQuickAiPrompt(text);
+  }
+};
+
 window.sendAiChatMessage = function(e) {
   if (window.app && typeof window.app.sendAiChatMessage === 'function') {
     window.app.sendAiChatMessage(e);
+  }
+};
+
+window.handleGlobalAiSearch = function() {
+  if (window.app && typeof window.app.handleGlobalAiSearch === 'function') {
+    window.app.handleGlobalAiSearch();
+  }
+};
+
+window.closeGlobalAiSearch = function() {
+  if (window.app && typeof window.app.closeGlobalAiSearch === 'function') {
+    window.app.closeGlobalAiSearch();
+  }
+};
+
+window.selectAiSearchSuggestion = function(query) {
+  if (window.app && typeof window.app.selectAiSearchSuggestion === 'function') {
+    window.app.selectAiSearchSuggestion(query);
+  }
+};
+
+window.openAiChatWithQuery = function(query) {
+  if (window.app && typeof window.app.openAiChatWithQuery === 'function') {
+    window.app.openAiChatWithQuery(query);
   }
 };
 
@@ -1696,6 +2234,36 @@ window.toggleFabMenu = function() {
   } else {
     const menu = document.getElementById('fab-menu');
     if (menu) menu.classList.toggle('hidden');
+  }
+};
+
+window.handleForgotPassword = function(e) {
+  if (window.app && typeof window.app.handleForgotPassword === 'function') {
+    window.app.handleForgotPassword(e);
+  }
+};
+
+window.handleVerifyOtp = function(e) {
+  if (window.app && typeof window.app.handleVerifyOtp === 'function') {
+    window.app.handleVerifyOtp(e);
+  }
+};
+
+window.handleResetPassword = function(e) {
+  if (window.app && typeof window.app.handleResetPassword === 'function') {
+    window.app.handleResetPassword(e);
+  }
+};
+
+window.handleResendOtp = function() {
+  if (window.app && typeof window.app.handleResendOtp === 'function') {
+    window.app.handleResendOtp();
+  }
+};
+
+window.closeOtpModal = function() {
+  if (window.app && typeof window.app.closeOtpModal === 'function') {
+    window.app.closeOtpModal();
   }
 };
 

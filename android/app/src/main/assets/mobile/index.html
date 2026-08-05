@@ -45,6 +45,9 @@
       </div>
 
       <div class="topbar-actions">
+        <button class="icon-btn" onclick="window.mobileApp.openAiChat()" title="Ask AI Assistant">
+          <i data-lucide="bot" style="color: var(--accent-cyan);"></i>
+        </button>
         <button class="icon-btn" onclick="window.mobileApp.showPushNotification('Push Notifications Active', 'Android Push Service connected.')">
           <i data-lucide="bell"></i>
           <span class="notif-badge"></span>
@@ -117,6 +120,9 @@
     </div>
 
     <ul class="drawer-menu-list">
+      <li class="drawer-menu-item" onclick="window.mobileApp.openAiChat(); window.mobileApp.toggleDrawer(false);">
+        <i data-lucide="bot" style="color: var(--accent-cyan);"></i> <span>Ask AI Assistant</span>
+      </li>
       <li class="drawer-menu-item" onclick="window.mobileApp.switchTab('dashboard'); window.mobileApp.toggleDrawer(false);">
         <i data-lucide="layout-dashboard"></i> <span>Dashboard</span>
       </li>

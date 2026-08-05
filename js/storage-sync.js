@@ -180,6 +180,30 @@ class StorageSyncEngine {
     try { return JSON.parse(s); } catch (e) { return { theme: 'dark', pushNotifications: true }; }
   }
 
+  // --- Auth Session Sync ---
+  getAuthSession() {
+    const session = localStorage.getItem('methodwise_auth_session');
+    if (!session) return { isLoggedIn: false, user: { name: 'Sai Swetha', email: 'engineer@methodwise.ai' } };
+    try {
+      return JSON.parse(session);
+    } catch (e) {
+      return { isLoggedIn: false, user: { name: 'Sai Swetha', email: 'engineer@methodwise.ai' } };
+    }
+  }
+
+  saveAuthSession(isLoggedIn, userObj = {}) {
+    const defaultUser = { name: 'Sai Swetha', email: 'engineer@methodwise.ai', ...userObj };
+    const sessionData = { isLoggedIn: !!isLoggedIn, user: defaultUser, timestamp: Date.now() };
+    localStorage.setItem('methodwise_auth_session', JSON.stringify(sessionData));
+    this.emit('AUTH_CHANGED', sessionData);
+    return sessionData;
+  }
+
+  clearAuthSession() {
+    localStorage.removeItem('methodwise_auth_session');
+    this.emit('AUTH_CHANGED', { isLoggedIn: false, user: null });
+  }
+
   updateSettings(newSettings) {
     const current = this.getSettings();
     const updated = { ...current, ...newSettings };

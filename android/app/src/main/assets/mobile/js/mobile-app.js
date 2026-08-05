@@ -434,6 +434,71 @@ class MethodWiseMobileApp {
     `);
   }
 
+  openAiChat() {
+    const initialContent = `
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: #040914; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="bot" style="width: 18px;"></i>
+          </div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.95rem;">MethodWise AI Assistant</div>
+            <div style="font-size: 0.74rem; color: var(--accent-emerald);">● Online • DFM & CAD Expert</div>
+          </div>
+        </div>
+        <button class="icon-btn" onclick="window.mobileApp.closeBottomSheet()"><i data-lucide="x"></i></button>
+      </div>
+
+      <div id="m-ai-chat-messages" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; padding: 4px;">
+        <div style="background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.25); color: var(--text-main); padding: 10px 14px; border-radius: 12px; border-bottom-left-radius: 2px; font-size: 0.84rem;">
+          Hello! 👋 I am your MethodWise AI Mobile Assistant. Ask me about material choices, DFM rules, cost estimates, or production processes!
+        </div>
+      </div>
+
+      <form onsubmit="window.mobileApp.sendMobileAiQuery(event)" style="display: flex; gap: 8px;">
+        <input type="text" id="m-ai-chat-input" class="m-input" placeholder="Ask AI Assistant..." autocomplete="off" style="font-size: 0.85rem;">
+        <button type="submit" class="m-btn m-btn-primary" style="width: auto; padding: 0 16px;"><i data-lucide="send"></i></button>
+      </form>
+    `;
+    this.showBottomSheet(initialContent);
+  }
+
+  sendMobileAiQuery(e) {
+    if (e) e.preventDefault();
+    const input = document.getElementById('m-ai-chat-input');
+    const container = document.getElementById('m-ai-chat-messages');
+    if (!input || !container) return;
+
+    const query = input.value.trim();
+    if (!query) return;
+
+    const userBubble = document.createElement('div');
+    userBubble.style.cssText = 'background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color: white; padding: 10px 14px; border-radius: 12px; border-bottom-right-radius: 2px; font-size: 0.84rem; align-self: flex-end; max-width: 85%;';
+    userBubble.textContent = query;
+    container.appendChild(userBubble);
+    input.value = '';
+    container.scrollTop = container.scrollHeight;
+
+    setTimeout(() => {
+      const q = query.toLowerCase();
+      let replyHtml = `For high structural efficiency and cost control, ABS Plastic (45 MPa strength) or Aluminium 6061 are recommended.`;
+
+      if (q.includes('material') || q.includes('abs') || q.includes('metal')) {
+        replyHtml = `<strong>Material Advice:</strong> ABS Plastic offers high impact strength at ₹140/kg. For metal applications, Aluminium 6061-T6 (310 MPa) or Titanium Ti-6Al-4V offer high performance.`;
+      } else if (q.includes('cost') || q.includes('price')) {
+        replyHtml = `<strong>Cost Breakdown:</strong> Unit production cost drops from ₹1,450 to ₹480 at 5,000 quantity batch size due to NRE mold amortization.`;
+      } else if (q.includes('dfm') || q.includes('rule') || q.includes('draft')) {
+        replyHtml = `<strong>DFM Guidelines:</strong> Maintain min 1.5° draft angle on vertical walls and uniform 2.5mm wall thickness to eliminate sink marks and drag.`;
+      }
+
+      const botBubble = document.createElement('div');
+      botBubble.style.cssText = 'background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.25); color: var(--text-main); padding: 10px 14px; border-radius: 12px; border-bottom-left-radius: 2px; font-size: 0.84rem; align-self: flex-start; max-width: 85%;';
+      botBubble.innerHTML = replyHtml;
+      container.appendChild(botBubble);
+      container.scrollTop = container.scrollHeight;
+    }, 500);
+  }
+
   showBottomSheet(htmlContent) {
     const sheet = document.getElementById('m-sheet');
     const content = document.getElementById('m-sheet-content');

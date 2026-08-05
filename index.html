@@ -53,15 +53,15 @@
         <p class="auth-subtitle">Smart Product Design & Manufacturing Decision Advisor</p>
       </div>
 
-      <form id="login-form" class="auth-form">
+      <form id="login-form" class="auth-form" onsubmit="window.handleLogin(event); return false;">
         <div class="form-group">
           <label class="form-label">Work Email</label>
-          <input type="email" id="login-email" class="form-control" placeholder="Enter your work email..." value="" required>
+          <input type="email" id="login-email" class="form-control" placeholder="Enter your work email...">
         </div>
 
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input type="password" id="login-password" class="form-control" placeholder="Enter your password..." value="" required>
+          <input type="password" id="login-password" class="form-control" placeholder="Enter your password...">
         </div>
 
         <div class="auth-options">
@@ -69,18 +69,75 @@
             <input type="checkbox" id="remember-me" checked>
             <span>Remember me</span>
           </label>
-          <a href="#" onclick="alert('Password reset link sent to registered email address.'); return false;">Forgot password?</a>
+          <a href="#" id="forgot-password-link" onclick="window.handleForgotPassword(event); return false;">Forgot password?</a>
         </div>
 
         <div class="auth-btn-row">
-          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;" onclick="window.handleLogin(event)">
             <i data-lucide="log-in"></i> Sign In to Advisor Platform
           </button>
-          <button type="button" id="demo-login-btn" class="btn btn-outline" style="width: 100%;">
+          <button type="button" id="demo-login-btn" class="btn btn-outline" style="width: 100%;" onclick="window.handleLogin(event)">
             <i data-lucide="zap"></i> Demo Quick Auto-Login
           </button>
         </div>
       </form>
+    </div>
+
+    <!-- OTP / FORGOT PASSWORD MODAL -->
+    <div id="otp-modal" class="auth-modal-overlay hidden">
+      <div class="auth-modal-card">
+        <button type="button" class="modal-close-btn" onclick="window.closeOtpModal()">&times;</button>
+        
+        <!-- STEP 1: Enter OTP -->
+        <div id="otp-step-1" class="otp-step">
+          <div class="auth-logo-icon" style="margin: 0 auto 16px auto;">
+            <i data-lucide="shield-check"></i>
+          </div>
+          <h3 class="auth-modal-title">Reset Password via OTP</h3>
+          <p class="auth-modal-subtitle">
+            We sent a 6-digit verification code to: <br>
+            <strong id="otp-target-email" class="otp-highlight-email">user@gmail.com</strong>
+          </p>
+
+          <div class="form-group" style="margin-top: 20px;">
+            <label class="form-label">Enter 6-Digit OTP Code</label>
+            <input type="text" id="otp-input" class="form-control otp-code-input" placeholder="e.g. 482915" maxlength="6" autocomplete="off">
+          </div>
+
+          <div class="otp-timer-row">
+            <span>Didn't receive code?</span>
+            <button type="button" id="resend-otp-btn" class="btn-link" onclick="window.handleResendOtp()">Resend OTP</button>
+            <span id="otp-countdown" class="otp-countdown-text"></span>
+          </div>
+
+          <button type="button" id="verify-otp-btn" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 16px;" onclick="window.handleVerifyOtp(event)">
+            <i data-lucide="check-circle"></i> Verify OTP Code
+          </button>
+        </div>
+
+        <!-- STEP 2: Set New Password -->
+        <div id="otp-step-2" class="otp-step hidden">
+          <div class="auth-logo-icon" style="margin: 0 auto 16px auto;">
+            <i data-lucide="key"></i>
+          </div>
+          <h3 class="auth-modal-title">Create New Password</h3>
+          <p class="auth-modal-subtitle">Enter your new password to complete password recovery.</p>
+
+          <div class="form-group" style="margin-top: 20px;">
+            <label class="form-label">New Password</label>
+            <input type="password" id="new-password-input" class="form-control" placeholder="Enter new password...">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input type="password" id="confirm-password-input" class="form-control" placeholder="Re-enter new password...">
+          </div>
+
+          <button type="button" id="reset-password-btn" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 16px;" onclick="window.handleResetPassword(event)">
+            <i data-lucide="save"></i> Update Password & Sign In
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -141,16 +198,19 @@
 
     <!-- TOPBAR NAVIGATION -->
     <header class="app-topbar">
-      <div class="topbar-search">
-        <i data-lucide="search" style="color: var(--text-dim);"></i>
-        <input type="text" id="global-search-input" placeholder="Search previous designs, materials, or processes..." autocomplete="off">
+      <div class="topbar-search" id="topbar-ai-search-container" style="position: relative; flex: 1; max-width: 520px;">
+        <i data-lucide="sparkles" style="color: var(--accent-cyan); position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; pointer-events: none;"></i>
+        <input type="text" id="global-search-input" placeholder="Ask AI Assistant... (e.g. Best material for strength, DFM rules, unit cost)" autocomplete="off" style="padding-left: 38px; padding-right: 85px; width: 100%;">
+        <button type="button" class="btn btn-primary btn-xs" id="global-search-btn" onclick="window.app.handleGlobalAiSearch()" style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 0.76rem; padding: 4px 10px; gap: 4px;">
+          <i data-lucide="bot" style="width: 12px; height: 12px;"></i> Ask AI
+        </button>
         <div id="global-search-dropdown" class="global-search-dropdown hidden"></div>
       </div>
 
       <div class="topbar-user-area">
         <div style="display: flex; align-items: center; gap: 8px;">
           <span class="badge badge-cyan" id="topbar-active-product-badge" style="font-size: 0.82rem; padding: 6px 12px;"><i data-lucide="cpu" style="width: 13px;"></i> Active Product: <strong id="topbar-active-prod-name" style="color: #ffffff; margin-left: 4px;">Smart Board</strong></span>
-          <span class="badge badge-emerald"><i data-lucide="activity" style="width: 12px;"></i> AI Engine Active</span>
+          <span class="badge badge-emerald" onclick="window.app.openAiChat()" style="cursor: pointer;" title="Open AI Assistant"><i data-lucide="activity" style="width: 12px;"></i> AI Engine Active</span>
         </div>
 
         <button class="btn btn-ghost" style="position: relative;" title="Help & Terminology Guide" onclick="window.app.openHelpModal()">
@@ -328,7 +388,7 @@
         </div>
 
         <!-- 3. AI Decision Workflow Timeline & AI Insight Panel -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+        <div class="dash-two-col-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; margin-bottom: 24px;">
           <!-- AI Decision Workflow Timeline -->
           <div class="glass-card" style="padding: 24px;">
             <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem; color: var(--accent-cyan); margin-bottom: 18px;">
@@ -420,7 +480,7 @@
         </div>
 
         <!-- 5. Smart Analytics Interactive Multi-Chart Suite -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+        <div class="dash-two-col-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; margin-bottom: 24px;">
           <div class="glass-card" style="padding: 20px;">
             <h4 style="font-size: 1rem; color: var(--text-main); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
               <i data-lucide="bar-chart-3" style="color: var(--accent-cyan);"></i> Production Cost Trend (Volume vs Unit Cost)
@@ -774,7 +834,7 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
               <div class="form-group">
                 <label class="form-label">Product Name</label>
-                <input type="text" id="prod-name" class="form-control" placeholder="e.g. Smart Helmet" value="Smart Helmet">
+                <input type="text" id="prod-name" class="form-control" placeholder="Enter product name (e.g. Smart Helmet, Enclosure, Bracket)">
               </div>
               <div class="form-group">
                 <label class="form-label">Product Type</label>
@@ -791,17 +851,17 @@
 
             <div class="form-group">
               <label class="form-label">Product Description</label>
-              <textarea id="prod-desc" class="form-control" rows="3" placeholder="Describe the physical product assembly...">Lightweight impact-resistant smart protective helmet with integrated Bluetooth & LED telemetry.</textarea>
+              <textarea id="prod-desc" class="form-control" rows="3" placeholder="Describe the physical product assembly, features, requirements..."></textarea>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
               <div class="form-group">
                 <label class="form-label">Product Purpose</label>
-                <input type="text" id="prod-purpose" class="form-control" placeholder="e.g. High impact protection" value="Protective Headwear for Sports & Micro-mobility">
+                <input type="text" id="prod-purpose" class="form-control" placeholder="Enter product purpose (e.g. High impact protection)">
               </div>
               <div class="form-group">
                 <label class="form-label">Target Usage Environment</label>
-                <input type="text" id="prod-usage" class="form-control" placeholder="e.g. Extreme Outdoor, High Shock" value="Outdoor Weather, Shock & Vibration">
+                <input type="text" id="prod-usage" class="form-control" placeholder="Enter target usage environment (e.g. Outdoor High Shock)">
               </div>
             </div>
           </div>
@@ -825,19 +885,19 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                   <div class="form-group">
                     <label class="form-label">Length</label>
-                    <input type="number" id="dim-length" class="form-control" value="280" min="1">
+                    <input type="number" id="dim-length" class="form-control" placeholder="Enter length (e.g. 280)" min="1">
                   </div>
                   <div class="form-group">
                     <label class="form-label">Width</label>
-                    <input type="number" id="dim-width" class="form-control" value="220" min="1">
+                    <input type="number" id="dim-width" class="form-control" placeholder="Enter width (e.g. 220)" min="1">
                   </div>
                   <div class="form-group">
                     <label class="form-label">Height</label>
-                    <input type="number" id="dim-height" class="form-control" value="180" min="1">
+                    <input type="number" id="dim-height" class="form-control" placeholder="Enter height (e.g. 180)" min="1">
                   </div>
                   <div class="form-group">
                     <label class="form-label">Estimated Weight (grams)</label>
-                    <input type="number" id="dim-weight" class="form-control" value="850" min="1">
+                    <input type="number" id="dim-weight" class="form-control" placeholder="Enter weight in grams (e.g. 850)" min="1">
                   </div>
                 </div>
               </div>
@@ -893,7 +953,7 @@
 
               <div class="form-group">
                 <label class="form-label">Target Production Quantity (Units)</label>
-                <input type="number" id="mfg-qty" class="form-control" value="5000" min="1" step="100">
+                <input type="number" id="mfg-qty" class="form-control" placeholder="Enter target quantity (e.g. 5000)" min="1" step="100">
               </div>
             </div>
 
@@ -2072,6 +2132,8 @@
         </div>
       </form>
     </div>
+  </div>
+
   <!-- Floating Quick Action Button (FAB) Menu -->
   <div class="fab-container" id="fab-floating-container">
     <div id="fab-menu" class="fab-menu hidden">
@@ -2096,7 +2158,19 @@
             <div style="font-size: 0.72rem; color: var(--accent-emerald); display: flex; align-items: center; gap: 4px;">● Online • DFM & CAD Expert</div>
           </div>
         </div>
-        <button class="btn btn-ghost btn-xs" onclick="window.app.closeAiChat()"><i data-lucide="x"></i></button>
+        <div style="display: flex; gap: 4px;">
+          <button class="btn btn-ghost btn-xs" onclick="window.app.clearAiChat()" title="Clear Chat History"><i data-lucide="trash-2" style="width: 14px; height: 14px;"></i></button>
+          <button class="btn btn-ghost btn-xs" onclick="window.app.closeAiChat()" title="Close Assistant"><i data-lucide="x" style="width: 14px; height: 14px;"></i></button>
+        </div>
+      </div>
+
+      <!-- Quick Action Prompts Bar -->
+      <div class="ai-quick-prompts">
+        <button type="button" class="quick-chip" onclick="window.app.sendQuickAiPrompt('Recommend Best Material')">🛠️ Materials</button>
+        <button type="button" class="quick-chip" onclick="window.app.sendQuickAiPrompt('Show Cost Breakdown')">💰 Cost Analysis</button>
+        <button type="button" class="quick-chip" onclick="window.app.sendQuickAiPrompt('Check DFM Rules')">📐 DFM Rules</button>
+        <button type="button" class="quick-chip" onclick="window.app.sendQuickAiPrompt('Active Project Status')">📊 Active Project</button>
+        <button type="button" class="quick-chip" onclick="window.app.sendQuickAiPrompt('Export Report Guide')">📄 Export</button>
       </div>
 
       <div id="ai-chat-messages" class="ai-chat-messages">
