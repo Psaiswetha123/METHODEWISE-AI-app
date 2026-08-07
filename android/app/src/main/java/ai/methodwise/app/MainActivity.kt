@@ -1,16 +1,18 @@
 package ai.methodwise.app
 
+import ai.methodwise.app.models.ProjectItem
+import ai.methodwise.app.network.ApiClient
+import ai.methodwise.app.sync.SyncManager
 import android.os.Bundle
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SyncManager.SyncCallback {
 
     private lateinit var webView: WebView
+    private lateinit var syncManager: SyncManager
+    private val hostNetworkUrl = "http://10.0.2.2:8080"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,7 +20,10 @@ class MainActivity : AppCompatActivity() {
         webView = WebView(this)
         setContentView(webView)
 
+        ApiClient.setBaseUrl(hostNetworkUrl)
+
         configureWebView()
+        initRealTimeSync()
         loadWebApp()
     }
 
@@ -34,9 +39,17 @@ class MainActivity : AppCompatActivity() {
         settings.mediaPlaybackRequiresUserGesture = false
         settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 
+        // Register Native JavaScript Bridge Interface
+        webView.addJavascriptInterface(WebAppInterface(), "AndroidNativeBridge")
+
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                 return false
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                view?.evaluateJavascript("window.SERVER_HOST_URL = '$hostNetworkUrl';", null)
             }
 
             override fun onReceivedError(
@@ -44,7 +57,6 @@ class MainActivity : AppCompatActivity() {
                 request: WebResourceRequest?,
                 error: WebResourceError?
             ) {
-                // If live host network URL fails or phone is offline, fall back to bundled asset index.html
                 if (request?.isForMainFrame == true) {
                     view?.loadUrl("file:///android_asset/index.html")
                 }
@@ -52,10 +64,56 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun initRealTimeSync() {
+        syncManager = SyncManager(this)
+        syncManager.setSyncListener(this)
+        try {
+            syncManager.startSseRealTimeSync(hostNetworkUrl)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private fun loadWebApp() {
-        // Primary Target: http://172.20.10.13:8080/index.html (exact same web application)
-        val liveNetworkUrl = "http://172.20.10.13:8080/index.html"
-        webView.loadUrl(liveNetworkUrl)
+        val liveUrl = "$hostNetworkUrl/index.html"
+        webView.loadUrl(liveUrl)
+    }
+
+    override fun onProjectsUpdated(projects: List<ProjectItem>) {
+        runOnUiThread {
+            webView.evaluateJavascript("if(window.MethodWiseSync && window.MethodWiseSync.fetchProjectsFromNetwork) window.MethodWiseSync.fetchProjectsFromNetwork();", null)
+        }
+    }
+
+    override fun onProfileUpdated(userJson: String) {
+        runOnUiThread {
+            webView.evaluateJavascript("if(window.MethodWiseSync && window.MethodWiseSync.fetchProjectsFromNetwork) window.MethodWiseSync.fetchProjectsFromNetwork();", null)
+        }
+    }
+
+    override fun onSettingsUpdated(settingsJson: String) {
+        runOnUiThread {
+            webView.evaluateJavascript("if(window.MethodWiseSync && window.MethodWiseSync.fetchProjectsFromNetwork) window.MethodWiseSync.fetchProjectsFromNetwork();", null)
+        }
+    }
+
+    inner class WebAppInterface {
+        @JavascriptInterface
+        fun showToast(message: String) {
+            runOnUiThread {
+                Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        @JavascriptInterface
+        fun setAuthToken(token: String) {
+            ApiClient.setAuthToken(token)
+        }
+
+        @JavascriptInterface
+        fun getServerHostUrl(): String {
+            return hostNetworkUrl
+        }
     }
 
     override fun onBackPressed() {
@@ -64,5 +122,10 @@ class MainActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        syncManager.stopSync()
     }
 }
