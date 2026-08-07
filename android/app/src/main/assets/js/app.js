@@ -35,18 +35,8 @@ class MethodWiseApp {
     // 4. Bind global navigation and action listeners
     this.bindEvents();
 
-    // 6. Restore user profile if session exists
-    if (window.MethodWiseSync && typeof window.MethodWiseSync.getAuthSession === 'function') {
-      const session = window.MethodWiseSync.getAuthSession();
-      if (session && session.isLoggedIn && session.user && session.user.email) {
-        this.isLoggedIn = true;
-        this.updateUserProfile(session.user.email);
-        this.switchView('dashboard-overview');
-        return;
-      }
-    }
-
-    // 7. Ensure correct initial screen visibility
+    // 6. Ensure default initial screen on launch is ALWAYS the Login Screen
+    this.isLoggedIn = false;
     this.switchView('login-screen');
   }
 
@@ -430,26 +420,91 @@ class MethodWiseApp {
     this.showToast('Profile & account details updated successfully!', 'success');
   }
 
-  handleLogin(e) {
+  handleDemoLogin(e) {
     if (e) e.preventDefault();
+    const emailEl = document.getElementById('login-email');
+    const passEl = document.getElementById('login-password');
+    if (emailEl) emailEl.value = 'saiswethanaidu.56@gmail.com';
+    if (passEl) passEl.value = 'demo12345';
+    this.handleLogin(e);
+  }
+
+  async handleLogin(e) {
+    if (e) e.preventDefault();
+
     const emailInput = document.getElementById('login-email');
     const passwordInput = document.getElementById('login-password');
-    let email = emailInput ? emailInput.value.trim() : '';
-    let password = passwordInput ? passwordInput.value.trim() : '';
+    const submitBtn = document.querySelector('#login-form button[type="submit"]');
 
-    if (!email) email = 'engineer@methodwise.ai';
-    if (!password) password = 'demo12345';
-
+    let email = emailInput && emailInput.value.trim() ? emailInput.value.trim() : 'saiswethanaidu.56@gmail.com';
+    let password = passwordInput && passwordInput.value.trim() ? passwordInput.value.trim() : 'demo12345';
     if (emailInput) emailInput.value = email;
     if (passwordInput) passwordInput.value = password;
+    const rememberMe = document.getElementById('remember-me')?.checked ?? true;
 
-    this.isLoggedIn = true;
-    if (window.MethodWiseSync && typeof window.MethodWiseSync.saveAuthSession === 'function') {
-      window.MethodWiseSync.saveAuthSession(true, { email: email, name: email.split('@')[0] });
+    // 3. UI Loading State
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Authenticating...`;
     }
-    this.updateUserProfile(email);
-    this.showToast(`Login successful! Welcome ${email}`, 'success');
-    this.switchView('dashboard-overview');
+
+    // 4. REST API Authentication Call
+    try {
+      let apiHost = window.location.protocol.startsWith('http') ? window.location.origin : 'http://localhost:8080';
+      if (window.MethodWiseSync && typeof window.MethodWiseSync.getServerUrl === 'function') {
+        apiHost = window.MethodWiseSync.getServerUrl();
+      }
+
+      const res = await fetch(`${apiHost}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password }),
+        signal: AbortSignal.timeout(4000)
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success || !data.user) {
+        this.showToast(data.error || 'Invalid Email or Password', 'error');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<i data-lucide="log-in"></i> Sign In to Advisor Platform`;
+          if (window.lucide) window.lucide.createIcons();
+        }
+        if (passwordInput) {
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+        return;
+      }
+
+      // 5. Successful Authentication -> Save Session & UserInfo
+      this.isLoggedIn = true;
+      if (window.MethodWiseSync && typeof window.MethodWiseSync.saveAuthSession === 'function') {
+        window.MethodWiseSync.saveAuthSession(true, data.user, data.token, data.refreshToken, rememberMe);
+      }
+      if (window.AndroidNativeBridge && typeof window.AndroidNativeBridge.setAuthToken === 'function') {
+        window.AndroidNativeBridge.setAuthToken(data.token);
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i data-lucide="log-in"></i> Sign In to Advisor Platform`;
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      this.showToast(`Login successful! Welcome ${data.user.name}`, 'success');
+      if (window.logFirebaseEvent) window.logFirebaseEvent('login', { method: 'email', user_name: data.user.name, email: data.user.email });
+      this.switchView('dashboard-overview');
+
+    } catch (err) {
+      this.showToast('Unable to connect to backend server. Please verify credentials.', 'error');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i data-lucide="log-in"></i> Sign In to Advisor Platform`;
+        if (window.lucide) window.lucide.createIcons();
+      }
+    }
   }
 
   async handleForgotPassword(e) {
@@ -2237,6 +2292,59 @@ window.toggleFabMenu = function() {
   }
 };
 
+function initAppInstance() {
+  if (!window.app) {
+    window.app = new MethodWiseApp();
+    window.app.init();
+  }
+}
+
+window.handleDemoLogin = function(e) {
+  if (e) e.preventDefault();
+  initAppInstance();
+  const emailEl = document.getElementById('login-email');
+  const passEl = document.getElementById('login-password');
+  if (emailEl) emailEl.value = 'saiswethanaidu.56@gmail.com';
+  if (passEl) passEl.value = 'demo12345';
+
+  if (window.app && typeof window.app.handleDemoLogin === 'function') {
+    window.app.handleDemoLogin(e);
+  } else if (window.app && typeof window.app.handleLogin === 'function') {
+    window.app.handleLogin(e);
+  }
+};
+
+window.handleLogin = function(e) {
+  if (e) e.preventDefault();
+  initAppInstance();
+  if (window.app && typeof window.app.handleLogin === 'function') {
+    window.app.handleLogin(e);
+  } else {
+    const loginScreen = document.getElementById('login-screen');
+    const appShell = document.getElementById('app-shell');
+    const activeSec = document.getElementById('dashboard-overview');
+    if (loginScreen) {
+      loginScreen.classList.add('hidden');
+      loginScreen.style.display = 'none';
+    }
+    if (appShell) {
+      appShell.classList.remove('hidden');
+      appShell.style.display = 'grid';
+    }
+    if (activeSec) {
+      activeSec.classList.remove('hidden');
+      activeSec.style.display = 'block';
+      activeSec.classList.add('active');
+    }
+  }
+};
+
+window.handleLogout = function() {
+  if (window.app && typeof window.app.handleLogout === 'function') {
+    window.app.handleLogout();
+  }
+};
+
 window.handleForgotPassword = function(e) {
   if (window.app && typeof window.app.handleForgotPassword === 'function') {
     window.app.handleForgotPassword(e);
@@ -2267,7 +2375,8 @@ window.closeOtpModal = function() {
   }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-  window.app = new MethodWiseApp();
-  window.app.init();
-});
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAppInstance);
+} else {
+  initAppInstance();
+}
